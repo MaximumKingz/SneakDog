@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sneak Dog</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="static/css/style.css">
     <style>
         * {
             margin: 0;
@@ -46,232 +47,136 @@
             width: 100%;
             height: 100%;
         }
-        .header {
-            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
-            padding: 16px;
-            text-align: center;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-        .header h1 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        .stats-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 12px;
-            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
-        }
-        .stat-box {
-            background: var(--tg-theme-bg-color, #fff);
-            padding: 12px 20px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .stat-label {
-            font-size: 14px;
-            color: var(--tg-theme-hint-color, #999);
-            margin-bottom: 4px;
-        }
-        .stat-value {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--tg-theme-text-color, #000);
-        }
-        #game-area {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            background: var(--tg-theme-bg-color, #fff);
-            margin: 16px;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            touch-action: none;
-        }
-        #dog {
-            width: 48px;
-            height: 48px;
+        .menu-screen {
             position: absolute;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path fill="%23DD2E44" d="M4 16s0-4 4-4c3 0 4 4 4 4"/><path fill="%23EA596E" d="M32 16s0-4-4-4c-3 0-4 4-4 4"/><path fill="%23DD2E44" d="M32 16s2 14-14 14S4 16 4 16s2-6 14-6 14 6 14 6z"/><path fill="%23EA596E" d="M18 24c-6 0-10-4-10-4s4-4 10-4 10 4 10 4-4 4-10 4z"/><path fill="%23272B2B" d="M22 17c-.6 0-1 .4-1 1s.4 1 1 1 1-.4 1-1-.4-1-1-1zm-8 0c-.6 0-1 .4-1 1s.4 1 1 1 1-.4 1-1-.4-1-1-1z"/><path fill="%23EA596E" d="M18 21c-2.8 0-5.2-.8-7-2 1.8 2.4 4.2 4 7 4s5.2-1.6 7-4c-1.8 1.2-4.2 2-7 2z"/></svg>');
-            background-size: contain;
-            background-repeat: no-repeat;
-            touch-action: none;
-        }
-        #dog:active {
-            transform: scale(0.95);
-        }
-        .button-container {
-            padding: 16px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--tg-theme-bg-color, #fff);
             display: flex;
-            gap: 12px;
             justify-content: center;
-        }
-        .tg-button {
-            background: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #fff);
-            border: none;
-            border-radius: 8px;
-            padding: 12px 20px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            font-family: var(--default-font);
-        }
-        .tg-button:active {
-            opacity: 0.8;
-        }
-        .hint {
-            text-align: center;
-            color: var(--tg-theme-hint-color, #999);
-            font-size: 14px;
-            padding: 8px 16px;
-        }
-        .best-score {
-            color: var(--tg-theme-link-color, #2481cc);
-        }
-        @keyframes pop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        .score-pop {
-            animation: pop 0.3s ease;
-        }
-        .volume-controls {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            display: flex;
-            gap: 12px;
-        }
-        .volume-button {
-            background: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #fff);
-            border: none;
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            font-family: var(--default-font);
-        }
-        .volume-button:active {
-            opacity: 0.8;
-        }
-        .top-buttons {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            padding: 8px;
-        }
-        .game-button {
-            background: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #fff);
-            border: none;
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            font-family: var(--default-font);
-        }
-        .game-button:active {
-            opacity: 0.8;
-        }
-        .timer {
-            display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px;
         }
-        .timer-icon {
-            font-size: 24px;
+        .menu-content {
+            text-align: center;
         }
-        .timer-value {
+        .character-preview {
+            margin-bottom: 20px;
+        }
+        .character-preview img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+        .menu-buttons {
+            margin-top: 20px;
+        }
+        .menu-button {
+            background: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #fff);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-family: var(--default-font);
+            margin: 10px;
+        }
+        .menu-button:active {
+            opacity: 0.8;
+        }
+        .stats {
+            margin-top: 20px;
+        }
+        .stat {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .score-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
             font-size: 24px;
             font-weight: 600;
+        }
+        .coins {
+            font-size: 18px;
+            margin-left: 10px;
+        }
+        .power-ups {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .final-score {
+            font-size: 36px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .new-highscore {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--tg-theme-link-color, #2481cc);
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div id="gameContainer">
         <canvas id="gameCanvas"></canvas>
-        <div class="ui-overlay">
-            <div class="top-buttons">
-                <button id="pauseButton" class="game-button">⏸️</button>
-                <button id="storeButton" class="game-button">🏪</button>
-                <button id="achievementsButton" class="game-button">🏆</button>
+        
+        <!-- Main Menu -->
+        <div id="mainMenu" class="menu-screen">
+            <div class="menu-content">
+                <h1>Sneak Dog</h1>
+                <div class="character-preview">
+                    <img src="static/images/dog_idle.gif" alt="Dog Character" id="dogPreview">
+                </div>
+                <div class="menu-buttons">
+                    <button id="playButton" class="menu-button">Play Game</button>
+                    <button id="shopButton" class="menu-button">Shop</button>
+                    <button id="settingsButton" class="menu-button">Settings</button>
+                </div>
+                <div class="stats">
+                    <div class="stat">High Score: <span id="highScore">0</span></div>
+                    <div class="stat">Coins: <span id="coins">0</span></div>
+                </div>
             </div>
-            <div class="powerup-container">
-                <!-- Power-up buttons will be added dynamically -->
+        </div>
+
+        <!-- Game UI -->
+        <div id="gameUI" class="hidden">
+            <div class="score-container">
+                <div class="score">Score: <span id="currentScore">0</span></div>
+                <div class="coins">🪙 <span id="gameCoins">0</span></div>
             </div>
-            <div class="timer">
-                <span class="timer-icon">⏱️</span>
-                <span class="timer-value">00:00</span>
+            <div class="power-ups">
+                <!-- Power-ups will be added here -->
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="gameOver" class="menu-screen hidden">
+            <div class="menu-content">
+                <h2>Game Over!</h2>
+                <div class="final-score">Score: <span id="finalScore">0</span></div>
+                <div class="new-highscore hidden">New High Score!</div>
+                <div class="menu-buttons">
+                    <button id="restartButton" class="menu-button">Play Again</button>
+                    <button id="menuButton" class="menu-button">Main Menu</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <button id="missionsButton" class="game-button">📋</button>
-    <button id="multiplayerButton" class="game-button">👥</button>
-    <button id="petButton" class="game-button">🐾</button>
-    <button id="craftingButton" class="game-button">⚒️</button>
-    <button id="skillsButton" class="game-button">🌟</button>
-    <button id="dailyButton" class="game-button">📅</button>
-    <button id="questsButton" class="game-button">📜</button>
-    <button id="customButton" class="game-button">👔</button>
-
-    <div class="volume-controls">
-        <button id="musicToggle" class="volume-button">🎵</button>
-        <button id="soundToggle" class="volume-button">🔊</button>
-    </div>
-
-    <div class="header">
-        <h1>SneakDog</h1>
-        <div class="hint">Catch the sneaky dog as fast as you can! 🐕</div>
-    </div>
-
-    <div class="stats-container">
-        <div class="stat-box">
-            <div class="stat-label">SCORE</div>
-            <div class="stat-value" id="score-value">0</div>
-        </div>
-        <div class="stat-box">
-            <div class="stat-label">BEST</div>
-            <div class="stat-value best-score" id="best-score">0</div>
-        </div>
-    </div>
-
-    <div id="game-area">
-        <div id="dog"></div>
-    </div>
-
-    <div class="button-container">
-        <button class="tg-button" onclick="shareScore()">Share Score 📢</button>
-        <button class="tg-button" onclick="resetGame()">New Game 🔄</button>
-    </div>
-
-    <script src="static/js/audio.js"></script>
-    <script src="static/js/sprites.js"></script>
-    <script src="static/js/store.js"></script>
-    <script src="static/js/achievements.js"></script>
-    <script src="static/js/missions.js"></script>
-    <script src="static/js/multiplayer.js"></script>
-    <script src="static/js/pets.js"></script>
-    <script src="static/js/crafting.js"></script>
-    <script src="static/js/skills.js"></script>
-    <script src="static/js/daily.js"></script>
-    <script src="static/js/quests.js"></script>
-    <script src="static/js/customization.js"></script>
-    <script src="static/js/powerups.js"></script>
+    <!-- Load game scripts -->
+    <script src="static/js/game.js"></script>
     <script>
         // Initialize Telegram WebApp
         const webapp = window.Telegram.WebApp;
