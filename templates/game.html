@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SneakDog Game</title>
+    <script src="https://telegram.org/js/games.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: Arial, sans-serif;
+            touch-action: none;
+            color: white;
+        }
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #score {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 10px;
+            z-index: 100;
+        }
+        #startScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            text-align: center;
+            padding: 20px;
+        }
+        .button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="score">Score: 0</div>
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="startScreen">
+        <h1>SneakDog</h1>
+        <p>Catch the dog to earn points!</p>
+        <button onclick="startGame()" class="button">Start Game</button>
+    </div>
+
+    <script>
+        // Initialize TelegramGameProxy
+        const TelegramGameProxy = window.TelegramGameProxy;
+        
+        // Game variables
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score');
+        const startScreen = document.getElementById('startScreen');
+        
+        let score = 0;
+        let gameRunning = false;
+        let dogX = 0;
+        let dogY = 0;
+        let targetX = 0;
+        let targetY = 0;
+        
+        // Load dog image
+        const dogImage = new Image();
+        dogImage.src = 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/1f436.svg';
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function newDogPosition() {
+            targetX = Math.random() * (canvas.width - 100);
+            targetY = Math.random() * (canvas.height - 100);
+        }
+
+        function updateGame() {
+            if (!gameRunning) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Move dog towards target
+            dogX += (targetX - dogX) * 0.05;
+            dogY += (targetY - dogY) * 0.05;
+            
+            // Draw dog
+            ctx.drawImage(dogImage, dogX, dogY, 100, 100);
+            
+            requestAnimationFrame(updateGame);
+        }
+
+        function handleClick(event) {
+            if (!gameRunning) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            if (x >= dogX && x <= dogX + 100 && y >= dogY && y <= dogY + 100) {
+                score++;
+                scoreDisplay.textContent = `Score: ${score}`;
+                newDogPosition();
+                
+                // Send score to Telegram
+                if (TelegramGameProxy) {
+                    TelegramGameProxy.setScore(score);
+                }
+            }
+        }
+
+        function startGame() {
+            startScreen.style.display = 'none';
+            gameRunning = true;
+            score = 0;
+            scoreDisplay.textContent = 'Score: 0';
+            newDogPosition();
+            updateGame();
+        }
+
+        // Event Listeners
+        window.addEventListener('resize', resizeCanvas);
+        canvas.addEventListener('click', handleClick);
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleClick(e.touches[0]);
+        });
+
+        // Initialize
+        resizeCanvas();
+        dogImage.onload = () => {
+            ctx.drawImage(dogImage, canvas.width/2 - 50, canvas.height/2 - 50, 100, 100);
+        };
+    </script>
+</body>
+</html>

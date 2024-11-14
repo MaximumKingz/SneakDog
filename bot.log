@@ -1,0 +1,402 @@
+2024-11-14 20:34:04,047 - __main__ - INFO - Initializing bot...
+2024-11-14 20:34:04,067 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2024-11-14 20:34:04,069 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/certifi/cacert.pem'
+2024-11-14 20:34:04,117 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2024-11-14 20:34:04,118 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/certifi/cacert.pem'
+2024-11-14 20:34:04,170 - __main__ - INFO - Application built successfully
+2024-11-14 20:34:04,170 - __main__ - INFO - Handlers added successfully
+2024-11-14 20:34:04,171 - __main__ - INFO - Starting polling...
+2024-11-14 20:34:04,171 - asyncio - DEBUG - Using selector: KqueueSelector
+2024-11-14 20:34:04,172 - telegram.ext.ExtBot - DEBUG - Calling Bot API endpoint `getMe` with parameters `{}`
+2024-11-14 20:34:04,181 - httpcore.connection - DEBUG - connect_tcp.started host='api.telegram.org' port=443 local_address=None timeout=5.0 socket_options=None
+2024-11-14 20:34:04,220 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x1058c90d0>
+2024-11-14 20:34:04,220 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x1058a14d0> server_hostname='api.telegram.org' timeout=5.0
+2024-11-14 20:34:04,263 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x105759b20>
+2024-11-14 20:34:04,264 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:04,264 - httpcore.http11 - DEBUG - send_request_headers.complete
+2024-11-14 20:34:04,264 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2024-11-14 20:34:04,264 - httpcore.http11 - DEBUG - send_request_body.complete
+2024-11-14 20:34:04,264 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:04,278 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx/1.18.0'), (b'Date', b'Thu, 14 Nov 2024 19:34:04 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'251'), (b'Connection', b'keep-alive'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Methods', b'GET, POST, OPTIONS'), (b'Access-Control-Expose-Headers', b'Content-Length,Content-Type,Date,Server,Connection')])
+2024-11-14 20:34:04,279 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7719239069:AAGfskyBni2VejQMAxv_nX0BKZIxrkpcjPc/getMe "HTTP/1.1 200 OK"
+2024-11-14 20:34:04,279 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2024-11-14 20:34:04,279 - httpcore.http11 - DEBUG - receive_response_body.complete
+2024-11-14 20:34:04,279 - httpcore.http11 - DEBUG - response_closed.started
+2024-11-14 20:34:04,280 - httpcore.http11 - DEBUG - response_closed.complete
+2024-11-14 20:34:04,280 - telegram.ext.ExtBot - DEBUG - Call to Bot API endpoint `getMe` finished with return value `{'id': 7719239069, 'is_bot': True, 'first_name': 'Sneak Dog', 'username': 'sneak_dog_bot', 'can_join_groups': True, 'can_read_all_group_messages': False, 'supports_inline_queries': True, 'can_connect_to_business': False, 'has_main_web_app': False}`
+2024-11-14 20:34:04,280 - telegram.ext.ExtBot - DEBUG - This Bot is already initialized.
+2024-11-14 20:34:04,280 - telegram.ext.Updater - DEBUG - Updater started (polling)
+2024-11-14 20:34:04,281 - telegram.ext.Updater - DEBUG - Start network loop retry bootstrap del webhook
+2024-11-14 20:34:04,281 - telegram.ext.Updater - DEBUG - Deleting webhook
+2024-11-14 20:34:04,281 - telegram.ext.Updater - DEBUG - Dropping pending updates from Telegram server
+2024-11-14 20:34:04,281 - telegram.ext.ExtBot - DEBUG - Calling Bot API endpoint `deleteWebhook` with parameters `{'drop_pending_updates': True}`
+2024-11-14 20:34:04,281 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:04,282 - httpcore.http11 - DEBUG - send_request_headers.complete
+2024-11-14 20:34:04,282 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2024-11-14 20:34:04,282 - httpcore.http11 - DEBUG - send_request_body.complete
+2024-11-14 20:34:04,282 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:04,300 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx/1.18.0'), (b'Date', b'Thu, 14 Nov 2024 19:34:04 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'68'), (b'Connection', b'keep-alive'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Methods', b'GET, POST, OPTIONS'), (b'Access-Control-Expose-Headers', b'Content-Length,Content-Type,Date,Server,Connection')])
+2024-11-14 20:34:04,300 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7719239069:AAGfskyBni2VejQMAxv_nX0BKZIxrkpcjPc/deleteWebhook "HTTP/1.1 200 OK"
+2024-11-14 20:34:04,300 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2024-11-14 20:34:04,300 - httpcore.http11 - DEBUG - receive_response_body.complete
+2024-11-14 20:34:04,300 - httpcore.http11 - DEBUG - response_closed.started
+2024-11-14 20:34:04,301 - httpcore.http11 - DEBUG - response_closed.complete
+2024-11-14 20:34:04,301 - telegram.ext.ExtBot - DEBUG - Call to Bot API endpoint `deleteWebhook` finished with return value `True`
+2024-11-14 20:34:04,301 - telegram.ext.Updater - DEBUG - Bootstrap done
+2024-11-14 20:34:04,301 - telegram.ext.Updater - DEBUG - Waiting for polling to start
+2024-11-14 20:34:04,301 - telegram.ext.Updater - DEBUG - Polling updates from Telegram started
+2024-11-14 20:34:04,301 - telegram.ext.Updater - DEBUG - Start network loop retry getting Updates
+2024-11-14 20:34:04,301 - telegram.ext.ExtBot - DEBUG - Calling Bot API endpoint `getUpdates` with parameters `{'timeout': 10, 'offset': 0, 'allowed_updates': [<UpdateType.MESSAGE>, <UpdateType.EDITED_MESSAGE>, <UpdateType.CHANNEL_POST>, <UpdateType.EDITED_CHANNEL_POST>, <UpdateType.INLINE_QUERY>, <UpdateType.CHOSEN_INLINE_RESULT>, <UpdateType.CALLBACK_QUERY>, <UpdateType.SHIPPING_QUERY>, <UpdateType.PRE_CHECKOUT_QUERY>, <UpdateType.POLL>, <UpdateType.POLL_ANSWER>, <UpdateType.MY_CHAT_MEMBER>, <UpdateType.CHAT_MEMBER>, <UpdateType.CHAT_JOIN_REQUEST>, <UpdateType.CHAT_BOOST>, <UpdateType.REMOVED_CHAT_BOOST>, <UpdateType.MESSAGE_REACTION>, <UpdateType.MESSAGE_REACTION_COUNT>, <UpdateType.BUSINESS_CONNECTION>, <UpdateType.BUSINESS_MESSAGE>, <UpdateType.EDITED_BUSINESS_MESSAGE>, <UpdateType.DELETED_BUSINESS_MESSAGES>, <UpdateType.PURCHASED_PAID_MEDIA>]}`
+2024-11-14 20:34:04,302 - telegram.ext.Application - INFO - Application started
+2024-11-14 20:34:04,302 - httpcore.connection - DEBUG - connect_tcp.started host='api.telegram.org' port=443 local_address=None timeout=15 socket_options=None
+2024-11-14 20:34:04,347 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x105939670>
+2024-11-14 20:34:04,347 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x1058a18d0> server_hostname='api.telegram.org' timeout=15
+2024-11-14 20:34:04,371 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x105939af0>
+2024-11-14 20:34:04,371 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:04,373 - httpcore.http11 - DEBUG - send_request_headers.complete
+2024-11-14 20:34:04,373 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2024-11-14 20:34:04,373 - httpcore.http11 - DEBUG - send_request_body.complete
+2024-11-14 20:34:04,374 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:09,024 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 409, b'Conflict', [(b'Server', b'nginx/1.18.0'), (b'Date', b'Thu, 14 Nov 2024 19:34:08 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'143'), (b'Connection', b'keep-alive'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Expose-Headers', b'Content-Length,Content-Type,Date,Server,Connection')])
+2024-11-14 20:34:09,026 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7719239069:AAGfskyBni2VejQMAxv_nX0BKZIxrkpcjPc/getUpdates "HTTP/1.1 409 Conflict"
+2024-11-14 20:34:09,027 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2024-11-14 20:34:09,028 - httpcore.http11 - DEBUG - receive_response_body.complete
+2024-11-14 20:34:09,028 - httpcore.http11 - DEBUG - response_closed.started
+2024-11-14 20:34:09,029 - httpcore.http11 - DEBUG - response_closed.complete
+2024-11-14 20:34:09,031 - __main__ - ERROR - Exception while handling an update:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 743, in _network_loop_retry
+    if not await do_action():
+           ^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 737, in do_action
+    return action_cb_task.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 367, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 647, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 4421, in get_updates
+    await self._post(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 617, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 351, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 646, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 385, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2024-11-14 20:34:10,031 - telegram.ext.ExtBot - DEBUG - Calling Bot API endpoint `getUpdates` with parameters `{'timeout': 10, 'offset': 0, 'allowed_updates': [<UpdateType.MESSAGE>, <UpdateType.EDITED_MESSAGE>, <UpdateType.CHANNEL_POST>, <UpdateType.EDITED_CHANNEL_POST>, <UpdateType.INLINE_QUERY>, <UpdateType.CHOSEN_INLINE_RESULT>, <UpdateType.CALLBACK_QUERY>, <UpdateType.SHIPPING_QUERY>, <UpdateType.PRE_CHECKOUT_QUERY>, <UpdateType.POLL>, <UpdateType.POLL_ANSWER>, <UpdateType.MY_CHAT_MEMBER>, <UpdateType.CHAT_MEMBER>, <UpdateType.CHAT_JOIN_REQUEST>, <UpdateType.CHAT_BOOST>, <UpdateType.REMOVED_CHAT_BOOST>, <UpdateType.MESSAGE_REACTION>, <UpdateType.MESSAGE_REACTION_COUNT>, <UpdateType.BUSINESS_CONNECTION>, <UpdateType.BUSINESS_MESSAGE>, <UpdateType.EDITED_BUSINESS_MESSAGE>, <UpdateType.DELETED_BUSINESS_MESSAGES>, <UpdateType.PURCHASED_PAID_MEDIA>]}`
+2024-11-14 20:34:10,032 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:10,033 - httpcore.http11 - DEBUG - send_request_headers.complete
+2024-11-14 20:34:10,033 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2024-11-14 20:34:10,033 - httpcore.http11 - DEBUG - send_request_body.complete
+2024-11-14 20:34:10,033 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:15,341 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 409, b'Conflict', [(b'Server', b'nginx/1.18.0'), (b'Date', b'Thu, 14 Nov 2024 19:34:15 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'143'), (b'Connection', b'keep-alive'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Expose-Headers', b'Content-Length,Content-Type,Date,Server,Connection')])
+2024-11-14 20:34:15,343 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7719239069:AAGfskyBni2VejQMAxv_nX0BKZIxrkpcjPc/getUpdates "HTTP/1.1 409 Conflict"
+2024-11-14 20:34:15,343 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2024-11-14 20:34:15,343 - httpcore.http11 - DEBUG - receive_response_body.complete
+2024-11-14 20:34:15,344 - httpcore.http11 - DEBUG - response_closed.started
+2024-11-14 20:34:15,345 - httpcore.http11 - DEBUG - response_closed.complete
+2024-11-14 20:34:15,346 - __main__ - ERROR - Exception while handling an update:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 743, in _network_loop_retry
+    if not await do_action():
+           ^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 737, in do_action
+    return action_cb_task.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 367, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 647, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 4421, in get_updates
+    await self._post(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 617, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 351, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 646, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 385, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2024-11-14 20:34:16,846 - telegram.ext.ExtBot - DEBUG - Calling Bot API endpoint `getUpdates` with parameters `{'timeout': 10, 'offset': 0, 'allowed_updates': [<UpdateType.MESSAGE>, <UpdateType.EDITED_MESSAGE>, <UpdateType.CHANNEL_POST>, <UpdateType.EDITED_CHANNEL_POST>, <UpdateType.INLINE_QUERY>, <UpdateType.CHOSEN_INLINE_RESULT>, <UpdateType.CALLBACK_QUERY>, <UpdateType.SHIPPING_QUERY>, <UpdateType.PRE_CHECKOUT_QUERY>, <UpdateType.POLL>, <UpdateType.POLL_ANSWER>, <UpdateType.MY_CHAT_MEMBER>, <UpdateType.CHAT_MEMBER>, <UpdateType.CHAT_JOIN_REQUEST>, <UpdateType.CHAT_BOOST>, <UpdateType.REMOVED_CHAT_BOOST>, <UpdateType.MESSAGE_REACTION>, <UpdateType.MESSAGE_REACTION_COUNT>, <UpdateType.BUSINESS_CONNECTION>, <UpdateType.BUSINESS_MESSAGE>, <UpdateType.EDITED_BUSINESS_MESSAGE>, <UpdateType.DELETED_BUSINESS_MESSAGES>, <UpdateType.PURCHASED_PAID_MEDIA>]}`
+2024-11-14 20:34:16,848 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:16,850 - httpcore.http11 - DEBUG - send_request_headers.complete
+2024-11-14 20:34:16,850 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2024-11-14 20:34:16,850 - httpcore.http11 - DEBUG - send_request_body.complete
+2024-11-14 20:34:16,850 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:20,996 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 409, b'Conflict', [(b'Server', b'nginx/1.18.0'), (b'Date', b'Thu, 14 Nov 2024 19:34:20 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'143'), (b'Connection', b'keep-alive'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Expose-Headers', b'Content-Length,Content-Type,Date,Server,Connection')])
+2024-11-14 20:34:20,997 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7719239069:AAGfskyBni2VejQMAxv_nX0BKZIxrkpcjPc/getUpdates "HTTP/1.1 409 Conflict"
+2024-11-14 20:34:20,997 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2024-11-14 20:34:20,997 - httpcore.http11 - DEBUG - receive_response_body.complete
+2024-11-14 20:34:20,998 - httpcore.http11 - DEBUG - response_closed.started
+2024-11-14 20:34:20,998 - httpcore.http11 - DEBUG - response_closed.complete
+2024-11-14 20:34:20,998 - __main__ - ERROR - Exception while handling an update:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 743, in _network_loop_retry
+    if not await do_action():
+           ^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 737, in do_action
+    return action_cb_task.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 367, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 647, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 4421, in get_updates
+    await self._post(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 617, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 351, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 646, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 385, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2024-11-14 20:34:23,249 - telegram.ext.ExtBot - DEBUG - Calling Bot API endpoint `getUpdates` with parameters `{'timeout': 10, 'offset': 0, 'allowed_updates': [<UpdateType.MESSAGE>, <UpdateType.EDITED_MESSAGE>, <UpdateType.CHANNEL_POST>, <UpdateType.EDITED_CHANNEL_POST>, <UpdateType.INLINE_QUERY>, <UpdateType.CHOSEN_INLINE_RESULT>, <UpdateType.CALLBACK_QUERY>, <UpdateType.SHIPPING_QUERY>, <UpdateType.PRE_CHECKOUT_QUERY>, <UpdateType.POLL>, <UpdateType.POLL_ANSWER>, <UpdateType.MY_CHAT_MEMBER>, <UpdateType.CHAT_MEMBER>, <UpdateType.CHAT_JOIN_REQUEST>, <UpdateType.CHAT_BOOST>, <UpdateType.REMOVED_CHAT_BOOST>, <UpdateType.MESSAGE_REACTION>, <UpdateType.MESSAGE_REACTION_COUNT>, <UpdateType.BUSINESS_CONNECTION>, <UpdateType.BUSINESS_MESSAGE>, <UpdateType.EDITED_BUSINESS_MESSAGE>, <UpdateType.DELETED_BUSINESS_MESSAGES>, <UpdateType.PURCHASED_PAID_MEDIA>]}`
+2024-11-14 20:34:23,250 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:23,251 - httpcore.http11 - DEBUG - send_request_headers.complete
+2024-11-14 20:34:23,251 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2024-11-14 20:34:23,251 - httpcore.http11 - DEBUG - send_request_body.complete
+2024-11-14 20:34:23,251 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:31,502 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 409, b'Conflict', [(b'Server', b'nginx/1.18.0'), (b'Date', b'Thu, 14 Nov 2024 19:34:31 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'143'), (b'Connection', b'keep-alive'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Expose-Headers', b'Content-Length,Content-Type,Date,Server,Connection')])
+2024-11-14 20:34:31,508 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7719239069:AAGfskyBni2VejQMAxv_nX0BKZIxrkpcjPc/getUpdates "HTTP/1.1 409 Conflict"
+2024-11-14 20:34:31,509 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2024-11-14 20:34:31,510 - httpcore.http11 - DEBUG - receive_response_body.complete
+2024-11-14 20:34:31,511 - httpcore.http11 - DEBUG - response_closed.started
+2024-11-14 20:34:31,512 - httpcore.http11 - DEBUG - response_closed.complete
+2024-11-14 20:34:31,518 - __main__ - ERROR - Exception while handling an update:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 743, in _network_loop_retry
+    if not await do_action():
+           ^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 737, in do_action
+    return action_cb_task.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 367, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 647, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 4421, in get_updates
+    await self._post(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 617, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 351, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 646, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 385, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2024-11-14 20:34:34,894 - telegram.ext.ExtBot - DEBUG - Calling Bot API endpoint `getUpdates` with parameters `{'timeout': 10, 'offset': 0, 'allowed_updates': [<UpdateType.MESSAGE>, <UpdateType.EDITED_MESSAGE>, <UpdateType.CHANNEL_POST>, <UpdateType.EDITED_CHANNEL_POST>, <UpdateType.INLINE_QUERY>, <UpdateType.CHOSEN_INLINE_RESULT>, <UpdateType.CALLBACK_QUERY>, <UpdateType.SHIPPING_QUERY>, <UpdateType.PRE_CHECKOUT_QUERY>, <UpdateType.POLL>, <UpdateType.POLL_ANSWER>, <UpdateType.MY_CHAT_MEMBER>, <UpdateType.CHAT_MEMBER>, <UpdateType.CHAT_JOIN_REQUEST>, <UpdateType.CHAT_BOOST>, <UpdateType.REMOVED_CHAT_BOOST>, <UpdateType.MESSAGE_REACTION>, <UpdateType.MESSAGE_REACTION_COUNT>, <UpdateType.BUSINESS_CONNECTION>, <UpdateType.BUSINESS_MESSAGE>, <UpdateType.EDITED_BUSINESS_MESSAGE>, <UpdateType.DELETED_BUSINESS_MESSAGES>, <UpdateType.PURCHASED_PAID_MEDIA>]}`
+2024-11-14 20:34:34,898 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:34,899 - httpcore.http11 - DEBUG - send_request_headers.complete
+2024-11-14 20:34:34,899 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2024-11-14 20:34:34,900 - httpcore.http11 - DEBUG - send_request_body.complete
+2024-11-14 20:34:34,900 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:42,282 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 409, b'Conflict', [(b'Server', b'nginx/1.18.0'), (b'Date', b'Thu, 14 Nov 2024 19:34:42 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'143'), (b'Connection', b'keep-alive'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Expose-Headers', b'Content-Length,Content-Type,Date,Server,Connection')])
+2024-11-14 20:34:42,283 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7719239069:AAGfskyBni2VejQMAxv_nX0BKZIxrkpcjPc/getUpdates "HTTP/1.1 409 Conflict"
+2024-11-14 20:34:42,283 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2024-11-14 20:34:42,283 - httpcore.http11 - DEBUG - receive_response_body.complete
+2024-11-14 20:34:42,284 - httpcore.http11 - DEBUG - response_closed.started
+2024-11-14 20:34:42,284 - httpcore.http11 - DEBUG - response_closed.complete
+2024-11-14 20:34:42,286 - __main__ - ERROR - Exception while handling an update:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 743, in _network_loop_retry
+    if not await do_action():
+           ^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 737, in do_action
+    return action_cb_task.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 367, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 647, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 4421, in get_updates
+    await self._post(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 617, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 351, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 646, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 385, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2024-11-14 20:34:47,349 - telegram.ext.ExtBot - DEBUG - Calling Bot API endpoint `getUpdates` with parameters `{'timeout': 10, 'offset': 0, 'allowed_updates': [<UpdateType.MESSAGE>, <UpdateType.EDITED_MESSAGE>, <UpdateType.CHANNEL_POST>, <UpdateType.EDITED_CHANNEL_POST>, <UpdateType.INLINE_QUERY>, <UpdateType.CHOSEN_INLINE_RESULT>, <UpdateType.CALLBACK_QUERY>, <UpdateType.SHIPPING_QUERY>, <UpdateType.PRE_CHECKOUT_QUERY>, <UpdateType.POLL>, <UpdateType.POLL_ANSWER>, <UpdateType.MY_CHAT_MEMBER>, <UpdateType.CHAT_MEMBER>, <UpdateType.CHAT_JOIN_REQUEST>, <UpdateType.CHAT_BOOST>, <UpdateType.REMOVED_CHAT_BOOST>, <UpdateType.MESSAGE_REACTION>, <UpdateType.MESSAGE_REACTION_COUNT>, <UpdateType.BUSINESS_CONNECTION>, <UpdateType.BUSINESS_MESSAGE>, <UpdateType.EDITED_BUSINESS_MESSAGE>, <UpdateType.DELETED_BUSINESS_MESSAGES>, <UpdateType.PURCHASED_PAID_MEDIA>]}`
+2024-11-14 20:34:47,350 - httpcore.connection - DEBUG - close.started
+2024-11-14 20:34:47,351 - httpcore.connection - DEBUG - close.complete
+2024-11-14 20:34:47,351 - httpcore.connection - DEBUG - connect_tcp.started host='api.telegram.org' port=443 local_address=None timeout=15 socket_options=None
+2024-11-14 20:34:47,370 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x105938830>
+2024-11-14 20:34:47,371 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x1058a18d0> server_hostname='api.telegram.org' timeout=15
+2024-11-14 20:34:47,401 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x104593c50>
+2024-11-14 20:34:47,401 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:47,402 - httpcore.http11 - DEBUG - send_request_headers.complete
+2024-11-14 20:34:47,402 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2024-11-14 20:34:47,402 - httpcore.http11 - DEBUG - send_request_body.complete
+2024-11-14 20:34:47,403 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2024-11-14 20:34:53,413 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 409, b'Conflict', [(b'Server', b'nginx/1.18.0'), (b'Date', b'Thu, 14 Nov 2024 19:34:53 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'143'), (b'Connection', b'keep-alive'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Expose-Headers', b'Content-Length,Content-Type,Date,Server,Connection')])
+2024-11-14 20:34:53,413 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7719239069:AAGfskyBni2VejQMAxv_nX0BKZIxrkpcjPc/getUpdates "HTTP/1.1 409 Conflict"
+2024-11-14 20:34:53,414 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2024-11-14 20:34:53,414 - httpcore.http11 - DEBUG - receive_response_body.complete
+2024-11-14 20:34:53,414 - httpcore.http11 - DEBUG - response_closed.started
+2024-11-14 20:34:53,414 - httpcore.http11 - DEBUG - response_closed.complete
+2024-11-14 20:34:53,414 - __main__ - ERROR - Exception while handling an update:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 743, in _network_loop_retry
+    if not await do_action():
+           ^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 737, in do_action
+    return action_cb_task.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 367, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 647, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 4421, in get_updates
+    await self._post(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 617, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 351, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 646, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 385, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2024-11-14 20:35:01,011 - telegram.ext.ExtBot - DEBUG - Calling Bot API endpoint `getUpdates` with parameters `{'timeout': 10, 'offset': 0, 'allowed_updates': [<UpdateType.MESSAGE>, <UpdateType.EDITED_MESSAGE>, <UpdateType.CHANNEL_POST>, <UpdateType.EDITED_CHANNEL_POST>, <UpdateType.INLINE_QUERY>, <UpdateType.CHOSEN_INLINE_RESULT>, <UpdateType.CALLBACK_QUERY>, <UpdateType.SHIPPING_QUERY>, <UpdateType.PRE_CHECKOUT_QUERY>, <UpdateType.POLL>, <UpdateType.POLL_ANSWER>, <UpdateType.MY_CHAT_MEMBER>, <UpdateType.CHAT_MEMBER>, <UpdateType.CHAT_JOIN_REQUEST>, <UpdateType.CHAT_BOOST>, <UpdateType.REMOVED_CHAT_BOOST>, <UpdateType.MESSAGE_REACTION>, <UpdateType.MESSAGE_REACTION_COUNT>, <UpdateType.BUSINESS_CONNECTION>, <UpdateType.BUSINESS_MESSAGE>, <UpdateType.EDITED_BUSINESS_MESSAGE>, <UpdateType.DELETED_BUSINESS_MESSAGES>, <UpdateType.PURCHASED_PAID_MEDIA>]}`
+2024-11-14 20:35:01,014 - httpcore.connection - DEBUG - close.started
+2024-11-14 20:35:01,014 - httpcore.connection - DEBUG - close.complete
+2024-11-14 20:35:01,015 - httpcore.connection - DEBUG - connect_tcp.started host='api.telegram.org' port=443 local_address=None timeout=15 socket_options=None
+2024-11-14 20:35:01,032 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x10593bbc0>
+2024-11-14 20:35:01,032 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x1058a18d0> server_hostname='api.telegram.org' timeout=15
+2024-11-14 20:35:01,053 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x10593a300>
+2024-11-14 20:35:01,054 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2024-11-14 20:35:01,054 - httpcore.http11 - DEBUG - send_request_headers.complete
+2024-11-14 20:35:01,054 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2024-11-14 20:35:01,055 - httpcore.http11 - DEBUG - send_request_body.complete
+2024-11-14 20:35:01,055 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2024-11-14 20:35:05,045 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 409, b'Conflict', [(b'Server', b'nginx/1.18.0'), (b'Date', b'Thu, 14 Nov 2024 19:35:05 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'143'), (b'Connection', b'keep-alive'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Expose-Headers', b'Content-Length,Content-Type,Date,Server,Connection')])
+2024-11-14 20:35:05,045 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7719239069:AAGfskyBni2VejQMAxv_nX0BKZIxrkpcjPc/getUpdates "HTTP/1.1 409 Conflict"
+2024-11-14 20:35:05,045 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2024-11-14 20:35:05,046 - httpcore.http11 - DEBUG - receive_response_body.complete
+2024-11-14 20:35:05,046 - httpcore.http11 - DEBUG - response_closed.started
+2024-11-14 20:35:05,046 - httpcore.http11 - DEBUG - response_closed.complete
+2024-11-14 20:35:05,047 - __main__ - ERROR - Exception while handling an update:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 743, in _network_loop_retry
+    if not await do_action():
+           ^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 737, in do_action
+    return action_cb_task.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_updater.py", line 367, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 647, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 4421, in get_updates
+    await self._post(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 617, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 351, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/_bot.py", line 646, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 385, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2024-11-14 20:35:06,886 - telegram.ext.Application - DEBUG - Application received stop signal. Shutting down.
+2024-11-14 20:35:06,891 - telegram.ext.Updater - DEBUG - Stopping Updater
+2024-11-14 20:35:06,891 - telegram.ext.Updater - DEBUG - Waiting background polling task to finish up.
+2024-11-14 20:35:16,448 - telegram.ext.Updater - DEBUG - Calling `get_updates` one more time to mark all fetched updates as read.
+2024-11-14 20:35:16,456 - telegram.ext.ExtBot - DEBUG - Calling Bot API endpoint `getUpdates` with parameters `{'timeout': 0, 'offset': 0, 'allowed_updates': [<UpdateType.MESSAGE>, <UpdateType.EDITED_MESSAGE>, <UpdateType.CHANNEL_POST>, <UpdateType.EDITED_CHANNEL_POST>, <UpdateType.INLINE_QUERY>, <UpdateType.CHOSEN_INLINE_RESULT>, <UpdateType.CALLBACK_QUERY>, <UpdateType.SHIPPING_QUERY>, <UpdateType.PRE_CHECKOUT_QUERY>, <UpdateType.POLL>, <UpdateType.POLL_ANSWER>, <UpdateType.MY_CHAT_MEMBER>, <UpdateType.CHAT_MEMBER>, <UpdateType.CHAT_JOIN_REQUEST>, <UpdateType.CHAT_BOOST>, <UpdateType.REMOVED_CHAT_BOOST>, <UpdateType.MESSAGE_REACTION>, <UpdateType.MESSAGE_REACTION_COUNT>, <UpdateType.BUSINESS_CONNECTION>, <UpdateType.BUSINESS_MESSAGE>, <UpdateType.EDITED_BUSINESS_MESSAGE>, <UpdateType.DELETED_BUSINESS_MESSAGES>, <UpdateType.PURCHASED_PAID_MEDIA>]}`
+2024-11-14 20:35:16,457 - httpcore.connection - DEBUG - close.started
+2024-11-14 20:35:16,458 - httpcore.connection - DEBUG - close.complete
+2024-11-14 20:35:16,459 - httpcore.connection - DEBUG - connect_tcp.started host='api.telegram.org' port=443 local_address=None timeout=15 socket_options=None
+2024-11-14 20:35:16,487 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x105ab9190>
+2024-11-14 20:35:16,487 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x1058a18d0> server_hostname='api.telegram.org' timeout=15
+2024-11-14 20:35:16,521 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x105ab8f80>
+2024-11-14 20:35:16,522 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2024-11-14 20:35:16,523 - httpcore.http11 - DEBUG - send_request_headers.complete
+2024-11-14 20:35:16,524 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2024-11-14 20:35:16,524 - httpcore.http11 - DEBUG - send_request_body.complete
+2024-11-14 20:35:16,524 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2024-11-14 20:35:16,539 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx/1.18.0'), (b'Date', b'Thu, 14 Nov 2024 19:35:16 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'23'), (b'Connection', b'keep-alive'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Methods', b'GET, POST, OPTIONS'), (b'Access-Control-Expose-Headers', b'Content-Length,Content-Type,Date,Server,Connection')])
+2024-11-14 20:35:16,539 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7719239069:AAGfskyBni2VejQMAxv_nX0BKZIxrkpcjPc/getUpdates "HTTP/1.1 200 OK"
+2024-11-14 20:35:16,540 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2024-11-14 20:35:16,540 - httpcore.http11 - DEBUG - receive_response_body.complete
+2024-11-14 20:35:16,540 - httpcore.http11 - DEBUG - response_closed.started
+2024-11-14 20:35:16,540 - httpcore.http11 - DEBUG - response_closed.complete
+2024-11-14 20:35:16,541 - telegram.ext.ExtBot - DEBUG - Call to Bot API endpoint `getUpdates` finished with return value `[]`
+2024-11-14 20:35:16,541 - telegram.ext.ExtBot - DEBUG - No new updates found.
+2024-11-14 20:35:16,542 - telegram.ext.Updater - DEBUG - Updater.stop() is complete
+2024-11-14 20:35:16,545 - telegram.ext.Application - INFO - Application is stopping. This might take a moment.
+2024-11-14 20:35:16,563 - telegram.ext.Application - DEBUG - Waiting for update_queue to join
+2024-11-14 20:35:16,564 - telegram.ext.Application - DEBUG - Application stopped fetching of updates.
+2024-11-14 20:35:16,564 - telegram.ext.Application - DEBUG - Waiting for `create_task` calls to be processed
+2024-11-14 20:35:16,564 - telegram.ext.Application - INFO - Application.stop() complete
+2024-11-14 20:35:16,566 - httpcore.connection - DEBUG - close.started
+2024-11-14 20:35:16,567 - httpcore.connection - DEBUG - close.started
+2024-11-14 20:35:16,567 - httpcore.connection - DEBUG - close.complete
+2024-11-14 20:35:16,567 - httpcore.connection - DEBUG - close.complete
+2024-11-14 20:35:16,569 - telegram.ext.ExtBot - DEBUG - This Bot is already shut down. Returning.
+2024-11-14 20:35:16,569 - telegram.ext.Updater - DEBUG - Shut down of Updater complete

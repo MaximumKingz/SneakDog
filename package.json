@@ -1,0 +1,19 @@
+{
+  "name": "sneak-dog-game",
+  "version": "1.0.0",
+  "description": "Web3 Telegram game where players earn tokens by catching a dog",
+  "scripts": {
+    "start": "python app.py",
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat run scripts/deploy.js --network sepolia",
+    "test": "npx hardhat test"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.0",
+    "ethers": "^5.7.2"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "hardhat": "^2.14.0"
+  }
+}
