@@ -7,71 +7,144 @@
     <meta name="description" content="SneakDog - A fun Telegram Mini App game where you catch a sneaky dog!">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
+        :root {
+            --default-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        * {
             margin: 0;
             padding: 0;
-            width: 100vw;
-            height: 100vh;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: var(--default-font);
+            background: var(--tg-theme-bg-color, #fff);
+            color: var(--tg-theme-text-color, #000);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .stats-container {
             display: flex;
             justify-content: center;
-            align-items: center;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--tg-theme-bg-color, #1c1c1c);
-            color: var(--tg-theme-text-color, white);
+            gap: 20px;
+            padding: 12px;
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
         }
-        #game-container {
+        .stat-box {
+            background: var(--tg-theme-bg-color, #fff);
+            padding: 12px 20px;
+            border-radius: 12px;
             text-align: center;
-            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        #score {
+        .stat-label {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #999);
+            margin-bottom: 4px;
+        }
+        .stat-value {
             font-size: 24px;
-            margin: 20px 0;
-            color: var(--tg-theme-text-color, white);
+            font-weight: 600;
+            color: var(--tg-theme-text-color, #000);
         }
         #game-area {
-            width: 300px;
-            height: 300px;
-            border: 2px solid var(--tg-theme-button-color, white);
+            flex: 1;
             position: relative;
-            margin: 0 auto;
             overflow: hidden;
-            background: var(--tg-theme-secondary-bg-color, #2c2c2c);
+            background: var(--tg-theme-bg-color, #fff);
+            margin: 16px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         #dog {
-            width: 40px;
-            height: 40px;
-            background: var(--tg-theme-button-color, #ff6b6b);
-            border-radius: 50%;
+            width: 48px;
+            height: 48px;
             position: absolute;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.2s ease;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path fill="%23DD2E44" d="M4 16s0-4 4-4c3 0 4 4 4 4"/><path fill="%23EA596E" d="M32 16s0-4-4-4c-3 0-4 4-4 4"/><path fill="%23DD2E44" d="M32 16s2 14-14 14S4 16 4 16s2-6 14-6 14 6 14 6z"/><path fill="%23EA596E" d="M18 24c-6 0-10-4-10-4s4-4 10-4 10 4 10 4-4 4-10 4z"/><path fill="%23272B2B" d="M22 17c-.6 0-1 .4-1 1s.4 1 1 1 1-.4 1-1-.4-1-1-1zm-8 0c-.6 0-1 .4-1 1s.4 1 1 1 1-.4 1-1-.4-1-1-1z"/><path fill="%23EA596E" d="M18 21c-2.8 0-5.2-.8-7-2 1.8 2.4 4.2 4 7 4s5.2-1.6 7-4c-1.8 1.2-4.2 2-7 2z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
         }
-        .button {
-            background-color: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, white);
+        #dog:active {
+            transform: scale(0.95);
+        }
+        .button-container {
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .tg-button {
+            background: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #fff);
             border: none;
             border-radius: 8px;
-            padding: 10px 20px;
+            padding: 12px 20px;
             font-size: 16px;
+            font-weight: 500;
             cursor: pointer;
-            margin: 10px;
+            transition: opacity 0.2s;
+            font-family: var(--default-font);
+        }
+        .tg-button:active {
+            opacity: 0.8;
         }
         .hint {
-            color: var(--tg-theme-hint-color, #aaa);
+            text-align: center;
+            color: var(--tg-theme-hint-color, #999);
             font-size: 14px;
-            margin: 10px 0;
+            padding: 8px 16px;
+        }
+        .best-score {
+            color: var(--tg-theme-link-color, #2481cc);
+        }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .score-pop {
+            animation: pop 0.3s ease;
         }
     </style>
 </head>
 <body>
-    <div id="game-container">
+    <div class="header">
         <h1>SneakDog</h1>
-        <div id="score">Score: <span id="score-value">0</span></div>
-        <div id="game-area">
-            <div id="dog"></div>
+        <div class="hint">Catch the sneaky dog as fast as you can! 🐕</div>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-box">
+            <div class="stat-label">SCORE</div>
+            <div class="stat-value" id="score-value">0</div>
         </div>
-        <p class="hint">Tap the dog to catch it!</p>
-        <button class="button" onclick="shareScore()">Share Score</button>
+        <div class="stat-box">
+            <div class="stat-label">BEST</div>
+            <div class="stat-value best-score" id="best-score">0</div>
+        </div>
+    </div>
+
+    <div id="game-area">
+        <div id="dog"></div>
+    </div>
+
+    <div class="button-container">
+        <button class="tg-button" onclick="shareScore()">Share Score 📢</button>
+        <button class="tg-button" onclick="resetGame()">New Game 🔄</button>
     </div>
 
     <script>
@@ -80,27 +153,55 @@
         webapp.ready();
         webapp.expand();
 
+        // Game elements
         const dog = document.getElementById('dog');
         const gameArea = document.getElementById('game-area');
         const scoreElement = document.getElementById('score-value');
+        const bestScoreElement = document.getElementById('best-score');
+        
+        // Game state
         let score = 0;
+        let bestScore = localStorage.getItem('bestScore') || 0;
+        bestScoreElement.textContent = bestScore;
 
         function randomPosition() {
-            const maxX = gameArea.clientWidth - dog.clientWidth;
-            const maxY = gameArea.clientHeight - dog.clientHeight;
-            dog.style.left = Math.random() * maxX + 'px';
-            dog.style.top = Math.random() * maxY + 'px';
+            const padding = 20;
+            const maxX = gameArea.clientWidth - dog.clientWidth - padding;
+            const maxY = gameArea.clientHeight - dog.clientHeight - padding;
+            const x = Math.max(padding, Math.random() * maxX);
+            const y = Math.max(padding, Math.random() * maxY);
+            dog.style.left = x + 'px';
+            dog.style.top = y + 'px';
         }
 
         function updateScore() {
             score += 1;
             scoreElement.textContent = score;
-            // Notify Telegram about score change
+            scoreElement.classList.add('score-pop');
+            setTimeout(() => scoreElement.classList.remove('score-pop'), 300);
+
+            if (score > bestScore) {
+                bestScore = score;
+                bestScoreElement.textContent = bestScore;
+                localStorage.setItem('bestScore', bestScore);
+            }
+
+            // Haptic feedback
             webapp.HapticFeedback.impactOccurred('medium');
         }
 
         function shareScore() {
-            webapp.switchInlineQuery(`I caught the dog ${score} times in SneakDog! Can you beat my score? 🐕`, ['sneakdog']);
+            webapp.switchInlineQuery(
+                `🐕 I caught the sneaky dog ${score} times in SneakDog! Can you beat my score?`,
+                ['sneakdog']
+            );
+        }
+
+        function resetGame() {
+            score = 0;
+            scoreElement.textContent = score;
+            randomPosition();
+            webapp.HapticFeedback.notificationOccurred('success');
         }
 
         dog.addEventListener('click', () => {
@@ -108,12 +209,18 @@
             randomPosition();
         });
 
-        // Initial position
+        // Initial setup
         randomPosition();
 
-        // Use Telegram theme colors
-        webapp.setHeaderColor(webapp.themeParams.secondary_bg_color || '#2c2c2c');
-        webapp.setBackgroundColor(webapp.themeParams.bg_color || '#1c1c1c');
+        // Set Telegram theme colors
+        webapp.setHeaderColor(webapp.themeParams.secondary_bg_color || '#f0f0f0');
+        webapp.setBackgroundColor(webapp.themeParams.bg_color || '#fff');
+
+        // Main Button setup (if needed)
+        webapp.MainButton.setParams({
+            text: 'SHARE SCORE',
+            is_visible: true
+        }).onClick(shareScore);
     </script>
 </body>
 </html>
