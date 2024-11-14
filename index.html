@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SneakDog</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--tg-theme-bg-color, #1c1c1c);
+            color: var(--tg-theme-text-color, white);
+        }
+        #game-container {
+            text-align: center;
+            padding: 20px;
+        }
+        #score {
+            font-size: 24px;
+            margin: 20px 0;
+            color: var(--tg-theme-text-color, white);
+        }
+        #game-area {
+            width: 300px;
+            height: 300px;
+            border: 2px solid var(--tg-theme-button-color, white);
+            position: relative;
+            margin: 0 auto;
+            overflow: hidden;
+            background: var(--tg-theme-secondary-bg-color, #2c2c2c);
+        }
+        #dog {
+            width: 40px;
+            height: 40px;
+            background: var(--tg-theme-button-color, #ff6b6b);
+            border-radius: 50%;
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .button {
+            background-color: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, white);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .hint {
+            color: var(--tg-theme-hint-color, #aaa);
+            font-size: 14px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>SneakDog</h1>
+        <div id="score">Score: <span id="score-value">0</span></div>
+        <div id="game-area">
+            <div id="dog"></div>
+        </div>
+        <p class="hint">Tap the dog to catch it!</p>
+        <button class="button" onclick="shareScore()">Share Score</button>
+    </div>
+
+    <script>
+        // Initialize Telegram WebApp
+        const webapp = window.Telegram.WebApp;
+        webapp.ready();
+        webapp.expand();
+
+        const dog = document.getElementById('dog');
+        const gameArea = document.getElementById('game-area');
+        const scoreElement = document.getElementById('score-value');
+        let score = 0;
+
+        function randomPosition() {
+            const maxX = gameArea.clientWidth - dog.clientWidth;
+            const maxY = gameArea.clientHeight - dog.clientHeight;
+            dog.style.left = Math.random() * maxX + 'px';
+            dog.style.top = Math.random() * maxY + 'px';
+        }
+
+        function updateScore() {
+            score += 1;
+            scoreElement.textContent = score;
+            // Notify Telegram about score change
+            webapp.HapticFeedback.impactOccurred('medium');
+        }
+
+        function shareScore() {
+            webapp.switchInlineQuery(`I caught the dog ${score} times in SneakDog! Can you beat my score? 🐕`, ['sneakdog']);
+        }
+
+        dog.addEventListener('click', () => {
+            updateScore();
+            randomPosition();
+        });
+
+        // Initial position
+        randomPosition();
+
+        // Use Telegram theme colors
+        webapp.setHeaderColor(webapp.themeParams.secondary_bg_color || '#2c2c2c');
+        webapp.setBackgroundColor(webapp.themeParams.bg_color || '#1c1c1c');
+    </script>
+</body>
+</html>
