@@ -12,7 +12,27 @@ class SneakDog {
         // Game state
         this.gameState = 'menu';
         this.score = 0;
-        this.coins = 0;
+        this.coins = parseInt(localStorage.getItem('coins')) || 0;
+        this.highScore = parseInt(localStorage.getItem('highScore')) || 0;
+        
+        // Upgrades
+        this.upgrades = {
+            jump: {
+                level: parseInt(localStorage.getItem('jumpLevel')) || 1,
+                cost: 50,
+                maxLevel: 5
+            },
+            doubleJump: {
+                level: parseInt(localStorage.getItem('doubleJumpLevel')) || 0,
+                cost: 100,
+                maxLevel: 1
+            },
+            magnet: {
+                level: parseInt(localStorage.getItem('magnetLevel')) || 0,
+                cost: 150,
+                maxLevel: 3
+            }
+        };
         
         // Game settings
         this.settings = {
@@ -20,7 +40,8 @@ class SneakDog {
             jumpForce: -20,
             gameSpeed: 8,
             groundHeight: 100,
-            obstacleInterval: 1500
+            obstacleInterval: 1500,
+            coinInterval: 1000
         };
         
         // Initialize player
@@ -30,14 +51,30 @@ class SneakDog {
             width: 50,
             height: 50,
             velocityY: 0,
-            isJumping: false
+            isJumping: false,
+            canDoubleJump: true
         };
         
         // Initialize game objects
         this.obstacles = [];
+        this.gameCoins = [];
         this.lastObstacleTime = 0;
+        this.lastCoinTime = 0;
         
         // Set up event listeners
+        this.setupEventListeners();
+        
+        // Start game loop
+        this.lastTime = performance.now();
+        requestAnimationFrame(this.gameLoop.bind(this));
+        
+        // Initial setup
+        this.resizeCanvas();
+        this.updateUpgradeDisplay();
+    }
+    
+    setupEventListeners() {
+        // Game controls
         window.addEventListener('resize', () => this.resizeCanvas());
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space' || e.code === 'ArrowUp') {
@@ -50,14 +87,63 @@ class SneakDog {
             e.preventDefault();
             this.handleInput();
         });
+
+        // Menu controls
+        document.getElementById('menuButton').addEventListener('click', () => {
+            if (this.gameState === 'playing') {
+                this.gameState = 'paused';
+            }
+            document.getElementById('upgradeMenu').classList.remove('hidden');
+        });
+
+        document.getElementById('closeMenu').addEventListener('click', () => {
+            document.getElementById('upgradeMenu').classList.add('hidden');
+            if (this.gameState === 'paused') {
+                this.gameState = 'playing';
+            }
+        });
+
+        // Upgrade buttons
+        document.getElementById('jumpUpgrade').addEventListener('click', () => this.purchaseUpgrade('jump'));
+        document.getElementById('doubleJumpUpgrade').addEventListener('click', () => this.purchaseUpgrade('doubleJump'));
+        document.getElementById('magnetUpgrade').addEventListener('click', () => this.purchaseUpgrade('magnet'));
+    }
+    
+    purchaseUpgrade(type) {
+        const upgrade = this.upgrades[type];
+        if (this.coins >= upgrade.cost && upgrade.level < upgrade.maxLevel) {
+            this.coins -= upgrade.cost;
+            upgrade.level++;
+            localStorage.setItem('coins', this.coins);
+            localStorage.setItem(`${type}Level`, upgrade.level);
+            
+            // Apply upgrade effects
+            if (type === 'jump') {
+                this.settings.jumpForce = -20 - (upgrade.level * 2);
+            }
+            
+            this.updateUpgradeDisplay();
+        }
+    }
+    
+    updateUpgradeDisplay() {
+        // Update coins display
+        document.getElementById('coins').textContent = this.coins;
+        document.getElementById('highScore').textContent = this.highScore;
         
-        // Start game loop
-        this.lastTime = performance.now();
-        requestAnimationFrame(this.gameLoop.bind(this));
+        // Update upgrade levels
+        document.getElementById('jumpLevel').textContent = this.upgrades.jump.level;
+        document.getElementById('doubleJumpLevel').textContent = this.upgrades.doubleJump.level;
+        document.getElementById('magnetLevel').textContent = this.upgrades.magnet.level;
         
-        // Initial setup
-        this.resizeCanvas();
-        this.resetGame();
+        // Update button states
+        const jumpButton = document.getElementById('jumpUpgrade');
+        const doubleJumpButton = document.getElementById('doubleJumpUpgrade');
+        const magnetButton = document.getElementById('magnetUpgrade');
+        
+        jumpButton.disabled = this.coins < this.upgrades.jump.cost || this.upgrades.jump.level >= this.upgrades.jump.maxLevel;
+        doubleJumpButton.disabled = this.coins < this.upgrades.doubleJump.cost || this.upgrades.doubleJump.level >= this.upgrades.doubleJump.maxLevel;
+        magnetButton.disabled = this.coins < this.upgrades.magnet.cost || this.upgrades.magnet.level >= this.upgrades.magnet.maxLevel;
     }
     
     resizeCanvas() {
@@ -77,8 +163,13 @@ class SneakDog {
     handleInput() {
         if (this.gameState === 'menu') {
             this.startGame();
-        } else if (this.gameState === 'playing' && !this.player.isJumping) {
-            this.jump();
+        } else if (this.gameState === 'playing') {
+            if (!this.player.isJumping) {
+                this.jump();
+            } else if (this.upgrades.doubleJump.level > 0 && this.player.canDoubleJump) {
+                this.jump();
+                this.player.canDoubleJump = false;
+            }
         } else if (this.gameState === 'gameover') {
             this.resetGame();
         }
@@ -93,9 +184,13 @@ class SneakDog {
         this.gameState = 'playing';
         this.score = 0;
         this.obstacles = [];
+        this.gameCoins = [];
         this.settings.gameSpeed = 8;
         this.player.y = this.groundY - this.player.height;
         this.player.velocityY = 0;
+        this.player.isJumping = false;
+        this.player.canDoubleJump = true;
+        document.getElementById('score').textContent = '0';
     }
     
     resetGame() {
@@ -103,6 +198,7 @@ class SneakDog {
         this.player.y = this.groundY - this.player.height;
         this.player.velocityY = 0;
         this.obstacles = [];
+        this.gameCoins = [];
         this.score = 0;
     }
     
@@ -131,6 +227,21 @@ class SneakDog {
         }
     }
     
+    spawnCoin() {
+        const currentTime = performance.now();
+        if (currentTime - this.lastCoinTime > this.settings.coinInterval) {
+            const coin = {
+                x: this.canvas.width,
+                y: this.groundY - this.player.height - Math.random() * 150,
+                width: 20,
+                height: 20
+            };
+            
+            this.gameCoins.push(coin);
+            this.lastCoinTime = currentTime;
+        }
+    }
+    
     update() {
         if (this.gameState !== 'playing') return;
         
@@ -143,10 +254,12 @@ class SneakDog {
             this.player.y = this.groundY - this.player.height;
             this.player.velocityY = 0;
             this.player.isJumping = false;
+            this.player.canDoubleJump = true;
         }
         
         // Spawn and update obstacles
         this.spawnObstacle();
+        this.spawnCoin();
         
         // Update obstacles and check collisions
         for (let i = this.obstacles.length - 1; i >= 0; i--) {
@@ -155,26 +268,57 @@ class SneakDog {
             
             // Check collision
             if (this.checkCollision(this.player, obstacle)) {
-                this.gameState = 'gameover';
+                this.gameOver();
                 return;
             }
             
-            // Remove off-screen obstacles and increase score
+            // Remove off-screen obstacles
             if (obstacle.x + obstacle.width < 0) {
                 this.obstacles.splice(i, 1);
                 this.score++;
+                document.getElementById('score').textContent = this.score;
                 
                 // Increase game speed with score
                 this.settings.gameSpeed = Math.min(15, 8 + this.score * 0.1);
             }
         }
+        
+        // Update coins and check collection
+        for (let i = this.gameCoins.length - 1; i >= 0; i--) {
+            const coin = this.gameCoins[i];
+            coin.x -= this.settings.gameSpeed;
+            
+            // Check coin collection
+            const magnetRange = this.upgrades.magnet.level * 50;  // Magnet upgrade effect
+            if (this.checkCollision(this.player, coin, magnetRange)) {
+                this.gameCoins.splice(i, 1);
+                this.coins++;
+                localStorage.setItem('coins', this.coins);
+                this.updateUpgradeDisplay();
+                continue;
+            }
+            
+            // Remove off-screen coins
+            if (coin.x + coin.width < 0) {
+                this.gameCoins.splice(i, 1);
+            }
+        }
     }
     
-    checkCollision(player, obstacle) {
-        return player.x < obstacle.x + obstacle.width &&
-               player.x + player.width > obstacle.x &&
-               player.y < obstacle.y + obstacle.height &&
-               player.y + player.height > obstacle.y;
+    checkCollision(rect1, rect2, extraRange = 0) {
+        return (rect1.x - extraRange) < (rect2.x + rect2.width) &&
+               (rect1.x + rect1.width + extraRange) > rect2.x &&
+               (rect1.y - extraRange) < (rect2.y + rect2.height) &&
+               (rect1.y + rect1.height + extraRange) > rect2.y;
+    }
+    
+    gameOver() {
+        this.gameState = 'gameover';
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            localStorage.setItem('highScore', this.highScore);
+            document.getElementById('highScore').textContent = this.highScore;
+        }
     }
     
     draw() {
@@ -199,10 +343,19 @@ class SneakDog {
             this.ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
         });
         
-        // Draw score
-        this.ctx.fillStyle = '#000';
-        this.ctx.font = '24px Arial';
-        this.ctx.fillText(`Score: ${this.score}`, 20, 40);
+        // Draw coins
+        this.ctx.fillStyle = '#FFD700';
+        this.gameCoins.forEach(coin => {
+            this.ctx.beginPath();
+            this.ctx.arc(
+                coin.x + coin.width/2,
+                coin.y + coin.height/2,
+                coin.width/2,
+                0,
+                Math.PI * 2
+            );
+            this.ctx.fill();
+        });
         
         // Draw game state messages
         if (this.gameState === 'menu') {
@@ -227,7 +380,6 @@ class SneakDog {
     }
     
     gameLoop(timestamp) {
-        // Calculate delta time
         const deltaTime = timestamp - this.lastTime;
         this.lastTime = timestamp;
         
