@@ -110,7 +110,7 @@
     <div id="score" class="hud-item">SCORE: 0</div>
     <div id="time" class="hud-item">TIME: 30s</div>
     
-    <div id="startScreen" class="screen" style="display: flex;">
+    <div id="startScreen" class="screen">
         <h1 class="title">SneakDog</h1>
         <p class="subtitle">CATCH THE SNEAKERS!<br>PRESS SPACE OR TAP TO JUMP</p>
         <button onclick="startGame()" class="button">START GAME</button>
@@ -126,7 +126,20 @@
         
         // Load dog sprite
         const dogSprite = new Image();
-        dogSprite.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAGwSURBVGhD7ZixSgNBEIb3zjQWFhYWFhYWFhYWFhYWFhYWFj6AhY8gWFhYWFj4ABYWFhYWFhYWIlgoKBYWYiEYTZxZ9y4Xk82dN8CRu/tg2L2d3eW/f3Zv9xKlVIL/TGwXbGl6TMbxDVh4KCVPYFZg+UxkF2xJ0wPYewMjIcR3nudLrusewVaQZdkL7H2Dz8Bm2QGYFVg+c2gXbEnTfdh7BCMB+EB7CssCTJqm92BkE7ZCKeVzzm/BTrEsO0Yp9WDvE4wEsAJ7BssCTBzHt2BkHbYCpZRzzq/BTrEsO4JSysHeBxgJoA/2FJYFmCiKbsDIGmwFjDEOeVyBnWJZdgSllIW9dzASQA/sKSwLMGEYXoORVdgKKKUMsrgEO8Wy7AhKKQN7b2AkgC7YU1gWYIIguAIjK7AVEEIYxPAc7BTLsiMopTTsvYKRADpgT2FZgPF9/xKMLMNWQAiheZ6fg51iWXYEpZSCvRcwEkAb7CksCzCe552DkSXYChhjFPK4BTvFsuwISikJe89gJIAW2FNYFmBc1z0DI4uwv0JrzfP8DswaLJ/5AZQc8JHwR0WeAAAAAElFTkSuQmCC';
+        dogSprite.src = 'dog.png';
+        
+        // Make sure dog sprite is loaded before starting
+        dogSprite.onload = function() {
+            console.log("Dog sprite loaded successfully");
+            // Start game only after sprite is loaded
+            document.getElementById('startScreen').style.display = 'flex';
+        };
+        
+        dogSprite.onerror = function() {
+            console.error("Failed to load dog sprite");
+            // Show error message
+            alert("Failed to load game graphics. Please try refreshing the page.");
+        };
         
         // Game state
         let score = 0;
