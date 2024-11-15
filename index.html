@@ -6,12 +6,20 @@
     <title>SneakDog</title>
     <script src="https://telegram.org/js/games.js"></script>
     <style>
-        body {
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            image-rendering: pixelated;
+            user-select: none;
+        }
+        
+        body {
             background: #000;
             overflow: hidden;
-            font-family: Arial, sans-serif;
+            font-family: 'Press Start 2P', cursive;
         }
         
         #gameCanvas {
@@ -20,6 +28,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             border: 4px solid #4CAF50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
         }
         
         .hud {
@@ -31,7 +40,7 @@
         }
         
         #score { top: 10px; left: 10px; }
-        #time { top: 10px; right: 10px; }
+        #coins { top: 40px; left: 10px; color: gold; }
         
         #startScreen {
             position: fixed;
@@ -56,16 +65,17 @@
             border-radius: 5px;
             cursor: pointer;
             margin: 10px;
+            font-family: 'Press Start 2P', cursive;
         }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
     <div id="score" class="hud">SCORE: 0</div>
-    <div id="time" class="hud">TIME: 30s</div>
+    <div id="coins" class="hud">COINS: 0</div>
     <div id="startScreen">
         <h1>SneakDog</h1>
-        <p>CATCH THE SNEAKERS!<br>PRESS SPACE OR TAP TO JUMP</p>
+        <p>PRESS SPACE OR TAP TO JUMP<br>COLLECT COINS!</p>
         <button onclick="startGame()" class="button">START GAME</button>
     </div>
 
@@ -77,15 +87,10 @@
         canvas.width = 800;
         canvas.height = 400;
         
-        // Create dog sprite
-        const dogSprite = new Image();
-        dogSprite.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAgBAMAAAA79TKYAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAtUExURQAAAP///4SEhMzMzKqqqrGxsZmZmXV1dWZmZlVVVURERDMzMyIiIhEREQAAAHkUO+kAAAABdFJOUwBA5thmAAAAxklEQVRIx+3VMQ6CQBAF0GEDiY2FsTDxAMbEeAAPYGFhYWHhATyAhYWFhfECHsDCwsLCeAALC2NhYWwMCSZL5iBWW1gQE7+i+PNn5v+ZBcZYgQIFChQocLgKcHa/z+7/AwBwJwBAUkqS9wAASZKU0gEASJLMOQMAkCRTSh0AgCTJGDMAAEmSOecBAEiSKaUOAECS5JxzAACSpLX2AAAkSWvtAQBIktbaAwCQJI0xAwCQJHPOHQCAJJlS6gAAJEnOOQcAIEnGmAEA+Jx3LVjD7MsZXFUAAAAASUVORK5CYII=';
-
         // Game state
         let score = 0;
+        let coins = 0;
         let gameRunning = false;
-        let lastTime = 0;
-        let timeLeft = 30;
         
         // Player variables
         let playerX = 100;
@@ -97,22 +102,14 @@
         const JUMP_FORCE = -15;
         const PLAYER_SPEED = 5;
         
-        // Sneakers array
-        let sneakers = [];
+        // Animation variables
+        let frameCount = 0;
         
-        function update(timestamp) {
+        // Coin array
+        let coinArray = [];
+        
+        function update() {
             if (!gameRunning) return;
-            
-            const deltaTime = (timestamp - lastTime) / 1000;
-            lastTime = timestamp;
-            
-            // Update time
-            timeLeft -= deltaTime;
-            if (timeLeft <= 0) {
-                gameOver();
-                return;
-            }
-            document.getElementById('time').textContent = 'TIME: ' + Math.ceil(timeLeft) + 's';
             
             // Move player
             playerX += PLAYER_SPEED;
@@ -132,36 +129,41 @@
                 }
             }
             
-            // Update sneakers
+            // Update coins
             if (Math.random() < 0.02) {
-                sneakers.push({
+                coinArray.push({
                     x: canvas.width,
-                    y: Math.random() * (groundY - 100)
+                    y: Math.random() * (groundY - 100),
+                    rotation: 0
                 });
             }
             
-            for (let i = sneakers.length - 1; i >= 0; i--) {
-                const sneaker = sneakers[i];
-                sneaker.x -= 5;
+            for (let i = coinArray.length - 1; i >= 0; i--) {
+                const coin = coinArray[i];
+                coin.x -= 5;
+                coin.rotation += 0.1;
                 
                 // Check collision
-                const dx = sneaker.x - playerX;
-                const dy = sneaker.y - playerY;
+                const dx = coin.x - playerX;
+                const dy = coin.y - playerY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
                 if (distance < 30) {
+                    coins += 1;
                     score += 10;
                     document.getElementById('score').textContent = 'SCORE: ' + score;
-                    sneakers.splice(i, 1);
+                    document.getElementById('coins').textContent = 'COINS: ' + coins;
+                    coinArray.splice(i, 1);
                     continue;
                 }
                 
-                if (sneaker.x < -20) {
-                    sneakers.splice(i, 1);
+                if (coin.x < -20) {
+                    coinArray.splice(i, 1);
                 }
             }
             
             draw();
+            frameCount++;
             requestAnimationFrame(update);
         }
         
@@ -174,13 +176,35 @@
             ctx.fillStyle = '#90EE90';
             ctx.fillRect(0, groundY + 40, canvas.width, canvas.height - groundY - 40);
             
-            // Draw player (brown dog)
-            ctx.drawImage(dogSprite, playerX, playerY - 15);
+            // Draw player (running dog)
+            ctx.fillStyle = '#8B4513';
             
-            // Draw sneakers
-            ctx.fillStyle = '#FFFFFF';
-            for (const sneaker of sneakers) {
-                ctx.fillRect(sneaker.x, sneaker.y, 20, 10);
+            // Body
+            ctx.fillRect(playerX - 15, playerY - 30, 30, 20);
+            
+            // Head
+            ctx.beginPath();
+            ctx.arc(playerX + 5, playerY - 25, 12, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Ears
+            ctx.fillRect(playerX + 10, playerY - 40, 8, 12);
+            
+            // Running legs animation
+            const legOffset = Math.sin(frameCount * 0.3) * 5;
+            ctx.fillRect(playerX - 10, playerY - 10, 6, 15 + legOffset);
+            ctx.fillRect(playerX + 5, playerY - 10, 6, 15 - legOffset);
+            
+            // Draw coins
+            ctx.fillStyle = 'gold';
+            for (const coin of coinArray) {
+                ctx.save();
+                ctx.translate(coin.x, coin.y);
+                ctx.rotate(coin.rotation);
+                ctx.beginPath();
+                ctx.arc(0, 0, 10, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
             }
         }
         
@@ -205,17 +229,18 @@
         
         function startGame() {
             score = 0;
-            timeLeft = 30;
+            coins = 0;
             playerX = 100;
             playerY = groundY;
             playerVelY = 0;
             isJumping = false;
-            sneakers = [];
+            coinArray = [];
+            frameCount = 0;
             
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('score').textContent = 'SCORE: 0';
+            document.getElementById('coins').textContent = 'COINS: 0';
             gameRunning = true;
-            lastTime = performance.now();
             requestAnimationFrame(update);
         }
         
