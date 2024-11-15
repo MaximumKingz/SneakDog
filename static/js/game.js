@@ -71,6 +71,7 @@ class SneakDog {
         // Initial setup
         this.resizeCanvas();
         this.updateUpgradeDisplay();
+        this.updateAllProgressBars();
     }
     
     setupEventListeners() {
@@ -92,8 +93,8 @@ class SneakDog {
         document.getElementById('menuButton').addEventListener('click', () => {
             if (this.gameState === 'playing') {
                 this.gameState = 'paused';
-                showMenu();
             }
+            showMenu();
         });
 
         document.getElementById('closeMenu').addEventListener('click', () => {
@@ -123,6 +124,7 @@ class SneakDog {
             }
             
             this.updateUpgradeDisplay();
+            updateLevelProgress(type);
         }
     }
     
@@ -144,6 +146,12 @@ class SneakDog {
         jumpButton.disabled = this.coins < this.upgrades.jump.cost || this.upgrades.jump.level >= this.upgrades.jump.maxLevel;
         doubleJumpButton.disabled = this.coins < this.upgrades.doubleJump.cost || this.upgrades.doubleJump.level >= this.upgrades.doubleJump.maxLevel;
         magnetButton.disabled = this.coins < this.upgrades.magnet.cost || this.upgrades.magnet.level >= this.upgrades.magnet.maxLevel;
+    }
+    
+    updateAllProgressBars() {
+        updateLevelProgress('jump');
+        updateLevelProgress('doubleJump');
+        updateLevelProgress('magnet');
     }
     
     resizeCanvas() {
@@ -181,7 +189,7 @@ class SneakDog {
     }
     
     startGame() {
-        hideGameOver();
+        document.getElementById('gameMessage').classList.add('hidden');
         hideMenu();
         this.gameState = 'playing';
         this.score = 0;
@@ -321,7 +329,7 @@ class SneakDog {
             localStorage.setItem('highScore', this.highScore);
             document.getElementById('highScore').textContent = this.highScore;
         }
-        showGameOver(this.score);
+        document.getElementById('gameMessage').classList.remove('hidden');
     }
     
     draw() {
@@ -399,6 +407,13 @@ function showMenu() {
 
 function hideMenu() {
     document.getElementById('upgradeMenu').classList.remove('visible');
+}
+
+function updateLevelProgress(type) {
+    const upgrade = game.upgrades[type];
+    const progress = (upgrade.level / upgrade.maxLevel) * 100;
+    const progressBar = document.querySelector(`#${type}Upgrade`).parentElement.querySelector('.level-progress');
+    progressBar.style.width = `${progress}%`;
 }
 
 function showGameOver(score) {
