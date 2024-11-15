@@ -48,8 +48,8 @@ class SneakDog {
         this.player = {
             x: 100,
             y: 0,
-            width: 80,  // Match dog CSS width
-            height: 60, // Match dog CSS height
+            width: 90,  
+            height: 70, 
             velocityY: 0,
             isJumping: false,
             canDoubleJump: true,
@@ -214,10 +214,17 @@ class SneakDog {
     jump() {
         this.player.velocityY = this.settings.jumpForce;
         this.player.isJumping = true;
+        this.player.element.classList.remove('running');
         this.player.element.classList.add('jumping');
+        
+        // Remove jumping class after animation completes
         setTimeout(() => {
             this.player.element.classList.remove('jumping');
-        }, 400); // Match jump animation duration
+            if (this.gameState === 'playing' && this.player.y < this.groundY - this.player.height) {
+                // Only add running class if we're still in the air (for double jump)
+                this.player.element.classList.remove('running');
+            }
+        }, 500); // Match the jump animation duration
     }
     
     startGame() {
@@ -352,13 +359,15 @@ class SneakDog {
             this.player.velocityY = 0;
             this.player.isJumping = false;
             this.player.canDoubleJump = true;
-            this.player.element.classList.add('running');
-        } else {
-            this.player.element.classList.remove('running');
+            if (!this.player.element.classList.contains('running')) {
+                this.player.element.classList.add('running');
+            }
         }
 
-        // Update dog position
-        this.player.element.style.transform = `translate(${this.player.x}px, ${this.player.y}px)`;
+        // Update dog position with offset for better visual alignment
+        const visualX = this.player.x - 10; // Offset to align with collision box
+        const visualY = this.player.y - 5;  // Offset to align with collision box
+        this.player.element.style.transform = `translate(${visualX}px, ${visualY}px)`;
         
         // Spawn and update obstacles
         this.spawnObstacle();
@@ -409,10 +418,12 @@ class SneakDog {
     }
     
     checkCollision(rect1, rect2, extraRange = 0) {
-        return (rect1.x - extraRange) < (rect2.x + rect2.width) &&
-               (rect1.x + rect1.width + extraRange) > rect2.x &&
-               (rect1.y - extraRange) < (rect2.y + rect2.height) &&
-               (rect1.y + rect1.height + extraRange) > rect2.y;
+        // Add some padding to the collision box for better gameplay feel
+        const padding = 10;
+        return (rect1.x + padding - extraRange) < (rect2.x + rect2.width) &&
+               (rect1.x + rect1.width - padding + extraRange) > rect2.x &&
+               (rect1.y + padding - extraRange) < (rect2.y + rect2.height) &&
+               (rect1.y + rect1.height - padding + extraRange) > rect2.y;
     }
     
     gameOver() {
