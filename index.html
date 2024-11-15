@@ -20,7 +20,7 @@
             --bg-color: var(--tg-theme-bg-color, #1a1a1a);
             --secondary-bg: var(--tg-theme-secondary-bg-color, #2a2a2a);
             --hint-color: var(--tg-theme-hint-color, #999999);
-            --menu-overlay: rgba(0, 0, 0, 0.85);
+            --menu-overlay: rgba(0, 0, 0, 0.95);
             --card-bg: rgba(255, 255, 255, 0.1);
             --success-color: #4CAF50;
             --danger-color: #f44336;
@@ -53,8 +53,8 @@
             touch-action: none;
         }
 
-        /* Stats Bar */
-        .stats-bar {
+        /* Top Bar */
+        .top-bar {
             position: absolute;
             top: 0;
             left: 0;
@@ -67,19 +67,26 @@
             z-index: 50;
         }
 
+        .stats-group {
+            display: flex;
+            gap: 10px;
+        }
+
         .stat {
             display: flex;
             align-items: center;
             gap: 8px;
             background: var(--card-bg);
-            padding: 8px 12px;
+            padding: 8px 15px;
             border-radius: 20px;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
+            min-width: 80px;
+            justify-content: center;
         }
 
         .stat-icon {
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .stat-value {
@@ -89,29 +96,28 @@
         }
 
         /* Menu Button */
-        #menuButton {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            z-index: 60;
+        .menu-button {
             background: var(--primary-color);
             color: var(--text-color);
             border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
+            border-radius: 12px;
+            padding: 8px 20px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.2s ease;
         }
 
-        #menuButton:active {
+        .menu-button:active {
             transform: scale(0.95);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-button-icon {
+            font-size: 20px;
         }
 
         /* Upgrade Menu */
@@ -126,11 +132,10 @@
             -webkit-backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
-            align-items: center;
             z-index: 100;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .menu.visible {
@@ -139,48 +144,70 @@
         }
 
         .menu-header {
-            width: 100%;
             padding: 20px;
-            text-align: center;
-            position: relative;
             background: var(--secondary-bg);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .menu h1 {
-            color: var(--text-color);
-            font-size: 24px;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .menu-content {
-            width: 100%;
-            max-width: 600px;
-            overflow-y: auto;
-            padding: 20px;
-            flex-grow: 1;
-        }
-
-        .upgrade-item {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .upgrade-item:hover {
+        .menu-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .menu-close {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .upgrade-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .upgrade-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .upgrade-info {
             flex: 1;
-            margin-right: 15px;
+            margin-right: 20px;
         }
 
         .upgrade-name {
@@ -200,6 +227,25 @@
             font-size: 12px;
             color: var(--primary-color);
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .level-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            max-width: 100px;
+            overflow: hidden;
+        }
+
+        .level-progress {
+            height: 100%;
+            background: var(--primary-color);
+            border-radius: 2px;
+            transition: width 0.3s ease;
         }
 
         .upgrade-button {
@@ -211,48 +257,22 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.2s ease;
+            transition: all 0.2s ease;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .upgrade-button:not(:disabled):hover {
+            background: var(--success-color);
             transform: translateY(-1px);
-            background-color: var(--success-color);
         }
 
         .upgrade-button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            background-color: var(--hint-color);
-        }
-
-        .menu-footer {
-            width: 100%;
-            padding: 20px;
-            background: var(--secondary-bg);
-            display: flex;
-            justify-content: center;
-            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .close-button {
-            background: var(--danger-color);
-            color: var(--text-color);
-            border: none;
-            border-radius: 10px;
-            padding: 12px 30px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .close-button:hover {
-            transform: translateY(-1px);
-        }
-
-        .close-button:active {
-            transform: translateY(0);
+            background: var(--hint-color);
         }
 
         /* Game Messages */
@@ -263,19 +283,30 @@
             transform: translate(-50%, -50%);
             text-align: center;
             color: var(--text-color);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            background: var(--menu-overlay);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             z-index: 40;
         }
 
         .game-message h2 {
             font-size: 36px;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
         }
 
         .game-message p {
             font-size: 24px;
-            color: var(--hint-color);
+            color: var(--text-color);
             margin-bottom: 20px;
+        }
+
+        .game-message .tap-to-play {
+            color: var(--hint-color);
+            font-size: 18px;
+            animation: pulse 2s infinite;
         }
 
         .hidden {
@@ -284,34 +315,36 @@
 
         /* Animations */
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
         }
 
         /* Mobile Optimization */
         @media (max-width: 480px) {
-            .stats-bar {
+            .top-bar {
                 padding: 10px 15px;
             }
 
             .stat {
-                padding: 6px 10px;
+                padding: 6px 12px;
+                min-width: 70px;
             }
 
             .stat-icon {
-                font-size: 16px;
+                font-size: 14px;
             }
 
             .stat-value {
                 font-size: 14px;
             }
 
-            .upgrade-item {
+            .menu-button {
+                padding: 6px 15px;
+                font-size: 14px;
+            }
+
+            .upgrade-card {
                 padding: 15px;
             }
 
@@ -327,6 +360,18 @@
                 padding: 8px 15px;
                 font-size: 12px;
             }
+
+            .game-message {
+                padding: 20px;
+            }
+
+            .game-message h2 {
+                font-size: 28px;
+            }
+
+            .game-message p {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
@@ -334,60 +379,85 @@
     <div id="gameContainer">
         <canvas id="gameCanvas"></canvas>
         
-        <!-- Stats Bar -->
-        <div class="stats-bar">
-            <div class="stat">
-                <span class="stat-icon">🏃</span>
-                <span class="stat-value" id="score">0</span>
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="stats-group">
+                <div class="stat">
+                    <span class="stat-icon">🏃</span>
+                    <span class="stat-value" id="score">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">🪙</span>
+                    <span class="stat-value" id="coins">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">🏆</span>
+                    <span class="stat-value" id="highScore">0</span>
+                </div>
             </div>
-            <div class="stat">
-                <span class="stat-icon">🪙</span>
-                <span class="stat-value" id="coins">0</span>
-            </div>
-            <div class="stat">
-                <span class="stat-icon">🏆</span>
-                <span class="stat-value" id="highScore">0</span>
-            </div>
+            <button class="menu-button" id="menuButton">
+                <span class="menu-button-text">Upgrades</span>
+                <span class="menu-button-icon">⚙️</span>
+            </button>
         </div>
-
-        <!-- Menu Button -->
-        <button id="menuButton">☰</button>
 
         <!-- Upgrade Menu -->
         <div id="upgradeMenu" class="menu">
             <div class="menu-header">
-                <h1>Upgrades</h1>
+                <h1 class="menu-title">Upgrades</h1>
+                <button class="menu-close" id="closeMenu">×</button>
             </div>
             <div class="menu-content">
-                <div class="upgrade-item">
+                <div class="upgrade-card">
                     <div class="upgrade-info">
                         <div class="upgrade-name">Jump Power</div>
                         <div class="upgrade-description">Jump higher to avoid obstacles more easily</div>
-                        <div class="upgrade-level">Level: <span id="jumpLevel">1</span> / 5</div>
+                        <div class="upgrade-level">
+                            Level <span id="jumpLevel">1</span>/5
+                            <div class="level-bar">
+                                <div class="level-progress" style="width: 20%"></div>
+                            </div>
+                        </div>
                     </div>
-                    <button class="upgrade-button" id="jumpUpgrade">Upgrade (50 🪙)</button>
+                    <button class="upgrade-button" id="jumpUpgrade">
+                        <span>Upgrade</span>
+                        <span>50 🪙</span>
+                    </button>
                 </div>
                 
-                <div class="upgrade-item">
+                <div class="upgrade-card">
                     <div class="upgrade-info">
                         <div class="upgrade-name">Double Jump</div>
                         <div class="upgrade-description">Jump again while in the air</div>
-                        <div class="upgrade-level">Level: <span id="doubleJumpLevel">0</span> / 1</div>
+                        <div class="upgrade-level">
+                            Level <span id="doubleJumpLevel">0</span>/1
+                            <div class="level-bar">
+                                <div class="level-progress" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </div>
-                    <button class="upgrade-button" id="doubleJumpUpgrade">Unlock (100 🪙)</button>
+                    <button class="upgrade-button" id="doubleJumpUpgrade">
+                        <span>Unlock</span>
+                        <span>100 🪙</span>
+                    </button>
                 </div>
                 
-                <div class="upgrade-item">
+                <div class="upgrade-card">
                     <div class="upgrade-info">
                         <div class="upgrade-name">Coin Magnet</div>
                         <div class="upgrade-description">Attract coins from further away</div>
-                        <div class="upgrade-level">Level: <span id="magnetLevel">0</span> / 3</div>
+                        <div class="upgrade-level">
+                            Level <span id="magnetLevel">0</span>/3
+                            <div class="level-bar">
+                                <div class="level-progress" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </div>
-                    <button class="upgrade-button" id="magnetUpgrade">Unlock (150 🪙)</button>
+                    <button class="upgrade-button" id="magnetUpgrade">
+                        <span>Unlock</span>
+                        <span>150 🪙</span>
+                    </button>
                 </div>
-            </div>
-            <div class="menu-footer">
-                <button class="close-button" id="closeMenu">Close Menu</button>
             </div>
         </div>
 
@@ -395,7 +465,7 @@
         <div id="gameMessage" class="game-message hidden">
             <h2>Game Over!</h2>
             <p>Score: <span id="finalScore">0</span></p>
-            <p class="pulse">Tap to Play Again</p>
+            <p class="tap-to-play">Tap to Play Again</p>
         </div>
     </div>
     <script src="static/js/game.js"></script>
