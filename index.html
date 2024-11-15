@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SneakDog</title>
+    <script src="https://telegram.org/js/games.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
@@ -12,12 +13,16 @@
             padding: 0;
             box-sizing: border-box;
             image-rendering: pixelated;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
-            background: #000;
-            overflow: hidden;
+            background: var(--tg-theme-bg-color, #1c1c1c);
+            color: var(--tg-theme-text-color, #ffffff);
             font-family: 'Press Start 2P', cursive;
+            overflow: hidden;
         }
         
         #gameCanvas {
@@ -25,246 +30,322 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            image-rendering: pixelated;
+            background: #000;
+            border: 4px solid var(--tg-theme-button-color, #3390ec);
         }
         
-        #score {
+        #hud {
             position: fixed;
             top: 20px;
             left: 20px;
-            color: white;
-            font-size: 16px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             z-index: 100;
+            font-size: 14px;
             text-shadow: 2px 2px #000;
         }
         
-        #startScreen {
+        #coins {
+            color: #ffd700;
+        }
+        
+        .screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            display: flex;
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: white;
+            background: rgba(0, 0, 0, 0.9);
             z-index: 1000;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .screen h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--tg-theme-button-color, #3390ec);
+        }
+        
+        .screen p {
+            font-size: 12px;
+            margin: 10px 0;
+            line-height: 1.5;
         }
         
         .button {
-            padding: 15px 30px;
-            font-size: 16px;
-            background: #4CAF50;
-            color: white;
-            border: none;
+            padding: 12px 24px;
+            margin: 8px;
+            font-size: 12px;
             font-family: 'Press Start 2P', cursive;
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            margin-top: 20px;
-            text-transform: uppercase;
-            image-rendering: pixelated;
+            transition: transform 0.1s;
+        }
+        
+        .button:active {
+            transform: scale(0.95);
+        }
+        
+        #upgradeScreen {
+            background: rgba(0, 0, 0, 0.95);
+        }
+        
+        .upgrade-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            max-width: 300px;
+        }
+        
+        .upgrade-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 10px;
+        }
+        
+        .upgrade-item .cost {
+            color: #ffd700;
+            margin-top: 5px;
+        }
+        
+        #particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
-    <div id="score">SCORE: 0 TIME: 30s</div>
-    <div id="startScreen">
+    <canvas id="particles"></canvas>
+    
+    <div id="hud">
+        <div id="score">SCORE: 0</div>
+        <div id="coins">COINS: 0</div>
+        <div id="time">TIME: 30s</div>
+    </div>
+    
+    <div id="startScreen" class="screen" style="display: flex;">
         <h1>SNEAKDOG</h1>
-        <p>COLLECT THE SNEAKERS!</p>
+        <p>COLLECT SNEAKERS & DODGE OBSTACLES!</p>
+        <button onclick="showUpgrades()" class="button">UPGRADES</button>
         <button onclick="startGame()" class="button">START GAME</button>
+    </div>
+    
+    <div id="upgradeScreen" class="screen">
+        <h1>UPGRADES</h1>
+        <div class="upgrade-grid">
+            <div class="upgrade-item">
+                <div>JUMP POWER</div>
+                <div class="cost">50 COINS</div>
+                <button onclick="buyUpgrade('jump')" class="button">BUY</button>
+            </div>
+            <div class="upgrade-item">
+                <div>MAGNET</div>
+                <div class="cost">100 COINS</div>
+                <button onclick="buyUpgrade('magnet')" class="button">BUY</button>
+            </div>
+            <div class="upgrade-item">
+                <div>DOUBLE COINS</div>
+                <div class="cost">150 COINS</div>
+                <button onclick="buyUpgrade('double')" class="button">BUY</button>
+            </div>
+            <div class="upgrade-item">
+                <div>TIME BONUS</div>
+                <div class="cost">200 COINS</div>
+                <button onclick="buyUpgrade('time')" class="button">BUY</button>
+            </div>
+        </div>
+        <button onclick="hideUpgrades()" class="button">BACK</button>
     </div>
 
     <script>
+        // Get canvas and context
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const scoreDisplay = document.getElementById('score');
-        const startScreen = document.getElementById('startScreen');
-
-        // Game variables
-        let score = 0;
-        let timeLeft = 30;
+        const particles = document.getElementById('particles');
+        const particlesCtx = particles.getContext('2d');
+        
+        // Game state
         let gameRunning = false;
+        let score = 0;
+        let coins = 0;
+        let timeLeft = 30;
         let lastTime = 0;
         
-        // Player variables
-        let playerX = 0;
-        let playerY = 0;
-        let playerVelocityY = 0;
-        let isJumping = false;
-        const gravity = 0.5;
-        const jumpForce = -12;
-        const groundY = 300;
+        // Upgrade states
+        const upgrades = {
+            jump: { level: 0, cost: 50, maxLevel: 3 },
+            magnet: { level: 0, cost: 100, maxLevel: 3 },
+            double: { level: 0, cost: 150, maxLevel: 1 },
+            time: { level: 0, cost: 200, maxLevel: 3 }
+        };
         
-        // Sneaker variables
-        let sneakers = [];
-        const sneakerSize = 32;
-        
-        // Create pixel art sneaker
-        const sneakerCanvas = document.createElement('canvas');
-        sneakerCanvas.width = sneakerSize;
-        sneakerCanvas.height = sneakerSize;
-        const sneakerCtx = sneakerCanvas.getContext('2d');
-        
-        function drawSneakerPixelArt() {
-            sneakerCtx.fillStyle = '#fff';
-            // Draw sneaker outline
-            sneakerCtx.fillRect(8, 16, 16, 8);  // sole
-            sneakerCtx.fillRect(6, 12, 18, 4);  // middle
-            sneakerCtx.fillRect(4, 8, 20, 4);   // top
-            sneakerCtx.fillRect(20, 4, 8, 4);   // laces
-            // Add details
-            sneakerCtx.fillStyle = '#ddd';
-            sneakerCtx.fillRect(8, 8, 14, 2);   // stripe
+        // Load saved coins and upgrades
+        try {
+            const saved = localStorage.getItem('sneakdog');
+            if (saved) {
+                const data = JSON.parse(saved);
+                coins = data.coins || 0;
+                Object.assign(upgrades, data.upgrades || {});
+                updateHUD();
+            }
+        } catch (e) {
+            console.error('Error loading saved data:', e);
         }
-        drawSneakerPixelArt();
-
+        
+        // Save game data
+        function saveGame() {
+            try {
+                localStorage.setItem('sneakdog', JSON.stringify({
+                    coins: coins,
+                    upgrades: upgrades
+                }));
+            } catch (e) {
+                console.error('Error saving data:', e);
+            }
+        }
+        
+        // Show/hide upgrade screen
+        function showUpgrades() {
+            document.getElementById('upgradeScreen').style.display = 'flex';
+            document.getElementById('startScreen').style.display = 'none';
+        }
+        
+        function hideUpgrades() {
+            document.getElementById('upgradeScreen').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'flex';
+        }
+        
+        // Buy upgrade
+        function buyUpgrade(type) {
+            const upgrade = upgrades[type];
+            if (upgrade.level < upgrade.maxLevel && coins >= upgrade.cost) {
+                coins -= upgrade.cost;
+                upgrade.level++;
+                upgrade.cost = Math.floor(upgrade.cost * 1.5);
+                updateHUD();
+                saveGame();
+            }
+        }
+        
+        // Update HUD
+        function updateHUD() {
+            document.getElementById('score').textContent = `SCORE: ${score}`;
+            document.getElementById('coins').textContent = `COINS: ${coins}`;
+            document.getElementById('time').textContent = `TIME: ${Math.ceil(timeLeft)}s`;
+        }
+        
+        // Resize canvas
         function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            // Adjust ground level based on canvas height
-            groundY = canvas.height - 100;
-        }
-
-        function spawnSneaker() {
-            sneakers.push({
-                x: canvas.width,
-                y: Math.random() * (groundY - 150) + 50
-            });
-        }
-
-        function updatePlayer() {
-            // Apply gravity
-            playerVelocityY += gravity;
-            playerY += playerVelocityY;
+            // Make canvas fill most of the screen while maintaining aspect ratio
+            const margin = 20;
+            const maxWidth = window.innerWidth - margin * 2;
+            const maxHeight = window.innerHeight - margin * 2;
+            const ratio = 16 / 9;
             
-            // Ground collision
-            if (playerY > groundY) {
-                playerY = groundY;
-                playerVelocityY = 0;
-                isJumping = false;
-            }
-        }
-
-        function updateSneakers() {
-            for (let i = sneakers.length - 1; i >= 0; i--) {
-                const sneaker = sneakers[i];
-                sneaker.x -= 5;
-                
-                // Check collision with player
-                const dx = (playerX + 16) - (sneaker.x + 16);
-                const dy = (playerY + 16) - (sneaker.y + 16);
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
-                if (distance < 32) {
-                    // Collect sneaker
-                    sneakers.splice(i, 1);
-                    score += 10;
-                    timeLeft = Math.min(30, timeLeft + 1);
-                }
-                
-                // Remove if off screen
-                if (sneaker.x < -sneakerSize) {
-                    sneakers.splice(i, 1);
-                }
+            let width = maxWidth;
+            let height = width / ratio;
+            
+            if (height > maxHeight) {
+                height = maxHeight;
+                width = height * ratio;
             }
             
-            // Spawn new sneakers
-            if (Math.random() < 0.02) {
-                spawnSneaker();
-            }
+            canvas.width = width;
+            canvas.height = height;
+            particles.width = width;
+            particles.height = height;
+            
+            // Set high DPI if needed
+            const dpi = window.devicePixelRatio || 1;
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+            canvas.width = width * dpi;
+            canvas.height = height * dpi;
+            ctx.scale(dpi, dpi);
+            
+            particles.style.width = width + 'px';
+            particles.style.height = height + 'px';
+            particles.width = width * dpi;
+            particles.height = height * dpi;
+            particlesCtx.scale(dpi, dpi);
         }
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw ground
-            ctx.fillStyle = '#4a752c';
-            ctx.fillRect(0, groundY + 32, canvas.width, canvas.height - groundY);
-            
-            // Draw player
-            ctx.fillStyle = '#8B4513';
-            ctx.fillRect(playerX, playerY, 32, 32);
-            
-            // Draw sneakers
-            sneakers.forEach(sneaker => {
-                ctx.drawImage(sneakerCanvas, sneaker.x, sneaker.y);
-            });
-        }
-
-        function update(currentTime) {
+        
+        // Game loop
+        function gameLoop(timestamp) {
             if (!gameRunning) return;
-
-            const deltaTime = (currentTime - lastTime) / 1000;
-            lastTime = currentTime;
-
+            
+            const deltaTime = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+            
+            // Update time
             timeLeft -= deltaTime;
             if (timeLeft <= 0) {
                 gameOver();
                 return;
             }
-
-            updatePlayer();
-            updateSneakers();
-            draw();
-
-            scoreDisplay.textContent = `SCORE: ${score} TIME: ${Math.ceil(timeLeft)}s`;
-
-            requestAnimationFrame(update);
-        }
-
-        function jump() {
-            if (!isJumping) {
-                playerVelocityY = jumpForce;
-                isJumping = true;
-            }
-        }
-
-        function handleInput(event) {
-            if (!gameRunning) return;
             
-            if (event.type === 'keydown' && event.code === 'Space') {
-                jump();
-            } else if (event.type === 'touchstart' || event.type === 'click') {
-                jump();
-            }
+            // Update game state
+            updateGame(deltaTime);
+            
+            // Draw game
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawGame();
+            
+            // Update HUD
+            updateHUD();
+            
+            requestAnimationFrame(gameLoop);
         }
-
+        
+        // Game over
         function gameOver() {
             gameRunning = false;
+            const earnedCoins = Math.floor(score / 10);
+            coins += earnedCoins;
+            saveGame();
+            
+            const startScreen = document.getElementById('startScreen');
             startScreen.style.display = 'flex';
             startScreen.querySelector('h1').textContent = 'GAME OVER!';
-            startScreen.querySelector('p').textContent = `FINAL SCORE: ${score}`;
+            startScreen.querySelector('p').textContent = 
+                `SCORE: ${score}\nCOINS EARNED: ${earnedCoins}`;
+            
             if (window.TelegramGameProxy) {
                 window.TelegramGameProxy.setScore(score);
             }
         }
-
+        
+        // Start game
         function startGame() {
             score = 0;
-            timeLeft = 30;
-            playerX = 100;
-            playerY = groundY;
-            playerVelocityY = 0;
-            isJumping = false;
-            sneakers = [];
-            
-            startScreen.style.display = 'none';
+            timeLeft = 30 + (upgrades.time.level * 5);
             gameRunning = true;
             lastTime = performance.now();
-            update(lastTime);
+            
+            document.getElementById('startScreen').style.display = 'none';
+            gameLoop(lastTime);
         }
-
+        
         // Event listeners
         window.addEventListener('resize', resizeCanvas);
-        window.addEventListener('keydown', handleInput);
-        canvas.addEventListener('click', handleInput);
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            handleInput(e);
-        });
-
+        window.addEventListener('load', resizeCanvas);
+        
         // Initial setup
         resizeCanvas();
     </script>
