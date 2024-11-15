@@ -5,51 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SneakDog</title>
     <style>
-        body {
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * {
             margin: 0;
             padding: 0;
-            overflow: hidden;
-            background: #333;
-            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+            image-rendering: pixelated;
         }
+        
+        body {
+            background: #000;
+            overflow: hidden;
+            font-family: 'Press Start 2P', cursive;
+        }
+        
         #gameCanvas {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: #4a752c;
+            image-rendering: pixelated;
         }
+        
         #score {
             position: fixed;
             top: 20px;
             left: 20px;
             color: white;
-            font-size: 20px;
-            font-weight: bold;
+            font-size: 16px;
+            z-index: 100;
             text-shadow: 2px 2px #000;
         }
+        
         #startScreen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0, 0, 0, 0.85);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             color: white;
+            z-index: 1000;
         }
-        button {
+        
+        .button {
             padding: 15px 30px;
-            font-size: 20px;
+            font-size: 16px;
             background: #4CAF50;
             color: white;
             border: none;
-            border-radius: 5px;
+            font-family: 'Press Start 2P', cursive;
             cursor: pointer;
             margin-top: 20px;
+            text-transform: uppercase;
+            image-rendering: pixelated;
         }
     </style>
 </head>
@@ -57,9 +71,9 @@
     <canvas id="gameCanvas"></canvas>
     <div id="score">SCORE: 0 TIME: 30s</div>
     <div id="startScreen">
-        <h1>CATCH THE DOG!</h1>
-        <p>Click/tap the dog before time runs out!</p>
-        <button onclick="startGame()">START GAME</button>
+        <h1>SNEAKDOG</h1>
+        <p>COLLECT THE SNEAKERS!</p>
+        <button onclick="startGame()" class="button">START GAME</button>
     </div>
 
     <script>
@@ -73,71 +87,110 @@
         let timeLeft = 30;
         let gameRunning = false;
         let lastTime = 0;
-
-        // Dog variables
-        let dogX = 0;
-        let dogY = 0;
-        let dogSize = 30;
-        let dogSpeed = 3;
-        let dogColor = '#8B4513';
-        let targetX = 0;
-        let targetY = 0;
+        
+        // Player variables
+        let playerX = 0;
+        let playerY = 0;
+        let playerVelocityY = 0;
+        let isJumping = false;
+        const gravity = 0.5;
+        const jumpForce = -12;
+        const groundY = 300;
+        
+        // Sneaker variables
+        let sneakers = [];
+        const sneakerSize = 32;
+        
+        // Create pixel art sneaker
+        const sneakerCanvas = document.createElement('canvas');
+        sneakerCanvas.width = sneakerSize;
+        sneakerCanvas.height = sneakerSize;
+        const sneakerCtx = sneakerCanvas.getContext('2d');
+        
+        function drawSneakerPixelArt() {
+            sneakerCtx.fillStyle = '#fff';
+            // Draw sneaker outline
+            sneakerCtx.fillRect(8, 16, 16, 8);  // sole
+            sneakerCtx.fillRect(6, 12, 18, 4);  // middle
+            sneakerCtx.fillRect(4, 8, 20, 4);   // top
+            sneakerCtx.fillRect(20, 4, 8, 4);   // laces
+            // Add details
+            sneakerCtx.fillStyle = '#ddd';
+            sneakerCtx.fillRect(8, 8, 14, 2);   // stripe
+        }
+        drawSneakerPixelArt();
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            if (!gameRunning) {
-                drawDog();
-            }
+            // Adjust ground level based on canvas height
+            groundY = canvas.height - 100;
         }
 
-        function getRandomPosition() {
-            const padding = dogSize * 2;
-            return {
-                x: padding + Math.random() * (canvas.width - padding * 2),
-                y: padding + Math.random() * (canvas.height - padding * 2)
-            };
+        function spawnSneaker() {
+            sneakers.push({
+                x: canvas.width,
+                y: Math.random() * (groundY - 150) + 50
+            });
         }
 
-        function drawDog() {
-            // Draw dog body
-            ctx.fillStyle = dogColor;
-            ctx.beginPath();
-            ctx.arc(dogX, dogY, dogSize, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Draw dog face
-            ctx.fillStyle = '#000';
-            // Eyes
-            ctx.beginPath();
-            ctx.arc(dogX - 8, dogY - 5, 4, 0, Math.PI * 2);
-            ctx.arc(dogX + 8, dogY - 5, 4, 0, Math.PI * 2);
-            ctx.fill();
-            // Nose
-            ctx.beginPath();
-            ctx.arc(dogX, dogY + 5, 5, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        function updateDog() {
-            // Move dog towards target
-            const dx = targetX - dogX;
-            const dy = targetY - dogY;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+        function updatePlayer() {
+            // Apply gravity
+            playerVelocityY += gravity;
+            playerY += playerVelocityY;
             
-            if (distance > 5) {
-                dogX += (dx / distance) * dogSpeed;
-                dogY += (dy / distance) * dogSpeed;
-            } else {
-                // Get new target when close to current target
-                const newPos = getRandomPosition();
-                targetX = newPos.x;
-                targetY = newPos.y;
+            // Ground collision
+            if (playerY > groundY) {
+                playerY = groundY;
+                playerVelocityY = 0;
+                isJumping = false;
             }
+        }
 
-            // Keep dog in bounds
-            dogX = Math.max(dogSize, Math.min(canvas.width - dogSize, dogX));
-            dogY = Math.max(dogSize, Math.min(canvas.height - dogSize, dogY));
+        function updateSneakers() {
+            for (let i = sneakers.length - 1; i >= 0; i--) {
+                const sneaker = sneakers[i];
+                sneaker.x -= 5;
+                
+                // Check collision with player
+                const dx = (playerX + 16) - (sneaker.x + 16);
+                const dy = (playerY + 16) - (sneaker.y + 16);
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 32) {
+                    // Collect sneaker
+                    sneakers.splice(i, 1);
+                    score += 10;
+                    timeLeft = Math.min(30, timeLeft + 1);
+                }
+                
+                // Remove if off screen
+                if (sneaker.x < -sneakerSize) {
+                    sneakers.splice(i, 1);
+                }
+            }
+            
+            // Spawn new sneakers
+            if (Math.random() < 0.02) {
+                spawnSneaker();
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw ground
+            ctx.fillStyle = '#4a752c';
+            ctx.fillRect(0, groundY + 32, canvas.width, canvas.height - groundY);
+            
+            // Draw player
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(playerX, playerY, 32, 32);
+            
+            // Draw sneakers
+            sneakers.forEach(sneaker => {
+                ctx.drawImage(sneakerCanvas, sneaker.x, sneaker.y);
+            });
         }
 
         function update(currentTime) {
@@ -146,50 +199,35 @@
             const deltaTime = (currentTime - lastTime) / 1000;
             lastTime = currentTime;
 
-            // Update time
             timeLeft -= deltaTime;
             if (timeLeft <= 0) {
                 gameOver();
                 return;
             }
 
-            // Clear canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            updatePlayer();
+            updateSneakers();
+            draw();
 
-            // Update and draw dog
-            updateDog();
-            drawDog();
-
-            // Update score display
             scoreDisplay.textContent = `SCORE: ${score} TIME: ${Math.ceil(timeLeft)}s`;
 
             requestAnimationFrame(update);
         }
 
-        function handleClick(event) {
+        function jump() {
+            if (!isJumping) {
+                playerVelocityY = jumpForce;
+                isJumping = true;
+            }
+        }
+
+        function handleInput(event) {
             if (!gameRunning) return;
-
-            const rect = canvas.getBoundingClientRect();
-            const clickX = event.clientX - rect.left;
-            const clickY = event.clientY - rect.top;
-
-            const dx = clickX - dogX;
-            const dy = clickY - dogY;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance < dogSize) {
-                // Dog caught!
-                score += 10;
-                timeLeft = Math.min(30, timeLeft + 2);
-                dogSpeed += 0.2;
-
-                // Move dog to new position
-                const newPos = getRandomPosition();
-                targetX = newPos.x;
-                targetY = newPos.y;
-
-                // Update score
-                scoreDisplay.textContent = `SCORE: ${score} TIME: ${Math.ceil(timeLeft)}s`;
+            
+            if (event.type === 'keydown' && event.code === 'Space') {
+                jump();
+            } else if (event.type === 'touchstart' || event.type === 'click') {
+                jump();
             }
         }
 
@@ -197,29 +235,22 @@
             gameRunning = false;
             startScreen.style.display = 'flex';
             startScreen.querySelector('h1').textContent = 'GAME OVER!';
-            startScreen.querySelector('p').textContent = `Final Score: ${score}`;
-            startScreen.querySelector('button').textContent = 'PLAY AGAIN';
+            startScreen.querySelector('p').textContent = `FINAL SCORE: ${score}`;
+            if (window.TelegramGameProxy) {
+                window.TelegramGameProxy.setScore(score);
+            }
         }
 
         function startGame() {
-            // Reset game variables
             score = 0;
             timeLeft = 30;
-            dogSpeed = 3;
+            playerX = 100;
+            playerY = groundY;
+            playerVelocityY = 0;
+            isJumping = false;
+            sneakers = [];
             
-            // Position dog in center
-            dogX = canvas.width / 2;
-            dogY = canvas.height / 2;
-            
-            // Set initial target
-            const newPos = getRandomPosition();
-            targetX = newPos.x;
-            targetY = newPos.y;
-
-            // Hide start screen
             startScreen.style.display = 'none';
-            
-            // Start game
             gameRunning = true;
             lastTime = performance.now();
             update(lastTime);
@@ -227,10 +258,11 @@
 
         // Event listeners
         window.addEventListener('resize', resizeCanvas);
-        canvas.addEventListener('click', handleClick);
+        window.addEventListener('keydown', handleInput);
+        canvas.addEventListener('click', handleInput);
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            handleClick(e.touches[0]);
+            handleInput(e);
         });
 
         // Initial setup
