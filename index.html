@@ -6,94 +6,23 @@
     <title>SneakDog</title>
     <script src="https://telegram.org/js/games.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-        
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            image-rendering: pixelated;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        
-        body {
             background: #000;
             overflow: hidden;
-            font-family: 'Press Start 2P', cursive;
         }
-        
-        #gameCanvas {
+        canvas {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            border: 4px solid #4CAF50;
-            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
-        }
-        
-        .hud-item {
-            position: fixed;
-            color: white;
-            font-size: 14px;
-            text-shadow: 2px 2px #000;
-            z-index: 100;
-            padding: 10px 20px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid #4CAF50;
-            border-radius: 4px;
-        }
-        
-        #score { top: 20px; left: 20px; }
-        #coins { top: 60px; left: 20px; color: #FFD700; }
-        #time { top: 20px; right: 20px; }
-        
-        .screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            z-index: 1000;
-            padding: 20px;
-        }
-        
-        .button {
-            padding: 15px 30px;
-            font-size: 16px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            font-family: 'Press Start 2P', cursive;
-            cursor: pointer;
-            margin: 10px;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            border-radius: 4px;
-            box-shadow: 0 4px #388E3C;
         }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
-    <div id="score" class="hud-item">SCORE: 0</div>
-    <div id="coins" class="hud-item">COINS: 0</div>
-    <div id="time" class="hud-item">TIME: 30s</div>
-    
-    <div id="startScreen" class="screen" style="display: flex;">
-        <h1 class="title">SneakDog</h1>
-        <p class="subtitle">CATCH THE SNEAKERS!<br>PRESS SPACE OR TAP TO JUMP</p>
-        <button onclick="startGame()" class="button">START GAME</button>
-    </div>
-
     <script>
-        // Game variables
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
@@ -101,62 +30,26 @@
         canvas.width = 800;
         canvas.height = 400;
         
-        // Load dog sprite
-        const dogSprite = new Image();
-        dogSprite.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAYAAACm53kpAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo1RkY5MDg5QjUzNUQxMUUyQTcxMUFBOEZGQzM2RURDN0YiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NUZGOTBEOTk1MzVEMTFFMkE3MTFBQTRGR0MzNkVEQzdGIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NUZGOTBEOTc1MzVEMTFFMkE3MTFBQTRGR0MzNkVEQzdGIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjVGRjkwRDk4NTM1RDExRTJBNzExQUE0RkdDMzZFREM3RiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PgpTqXEAAAGrSURBVHjaYvz//z/DQAImhgEGow4YcAewEKvw7dt3DK9evWVgZ2dlYGJiZvj3j4GBhYWZ4e/ff0BxRgYmRkaGf/8ZGN69/crw7t0nBi4udgYeXjaGH99/MfDycTAwMzEx/P79l+HLl28MQkL8DGxsbAy/fv1h+P37LwM7OyvDnz9/Gf78/cvw+/cfhp8/fzP8+vWHgZ2dleHnz98MP3/+Yfj9+y/Dz1+/GH79+s3w8+dvht+//wDFfgPlfzH8/v0bYQYLM4YbGBn/MzIy/WdkYvrPyMj4n4kJyGZi/A9kMwLFmRgZmZgYGBkZGRgYmRgZmRiBYoxA9UyMTEA2IyMzIxMTMxMjEzMjIzMTIxMTEyMzMzMDMzMLAzMzCwMrKxvQDEagmYwMv379ZPj58wfDnz+/GH7//snw+/dPht+/fjH8+fOL4c+fX0Cx30D2L6AZ/xh+//nL8PvXH4bff/4w/P4NFPv9B8j+CxT7w/Dn71+GP39/M/z9C2T/BbL/Av0LlP/7l+Hf378M//79Y/j/7x/Qf/8Y/gOxoAA3g4gIPwPjKJX1kwADAPVH6jxH9uX1AAAAAElFTkSuQmCC';
-
-        // Make sure dog sprite is loaded before starting
-        dogSprite.onload = function() {
-            console.log("Dog sprite loaded successfully");
-        };
-        dogSprite.onerror = function() {
-            console.error("Failed to load dog sprite");
-        };
-
-        // Sprite animation variables
-        const SPRITE_WIDTH = 32;
-        const SPRITE_HEIGHT = 32;
-        const SPRITE_FRAMES = 4;
-        let currentFrame = 0;
-        let frameCounter = 0;
-        const FRAME_DELAY = 5;
-        
-        // Game state
-        let score = 0;
-        let gameRunning = false;
-        let lastTime = 0;
-        let timeLeft = 30;
-        
-        // Player variables
+        // Game variables
         let playerX = 100;
-        const groundY = canvas.height - 60;
-        let playerY = groundY;
+        let playerY = canvas.height - 50;
         let playerVelY = 0;
         let isJumping = false;
+        let score = 0;
+        let gameRunning = false;
+        
+        // Constants
         const GRAVITY = 0.8;
         const JUMP_FORCE = -15;
         const PLAYER_SPEED = 5;
         
-        // Sneaker variables
+        // Sneakers array
         let sneakers = [];
-        const SNEAKER_SPEED = 3;
         
-        // Game loop
-        function update(timestamp) {
+        function update() {
             if (!gameRunning) return;
             
-            const deltaTime = (timestamp - lastTime) / 1000;
-            lastTime = timestamp;
-            
-            // Update time
-            timeLeft -= deltaTime;
-            if (timeLeft <= 0) {
-                gameOver();
-                return;
-            }
-            document.getElementById('time').textContent = 'TIME: ' + Math.ceil(timeLeft) + 's';
-            
-            // Move player forward
+            // Move player
             playerX += PLAYER_SPEED;
             if (playerX > canvas.width + 50) {
                 playerX = -50;
@@ -167,17 +60,42 @@
                 playerY += playerVelY;
                 playerVelY += GRAVITY;
                 
-                if (playerY >= groundY) {
-                    playerY = groundY;
+                if (playerY >= canvas.height - 50) {
+                    playerY = canvas.height - 50;
                     isJumping = false;
                     playerVelY = 0;
                 }
             }
             
             // Update sneakers
-            updateSneakers();
+            if (Math.random() < 0.02) {
+                sneakers.push({
+                    x: canvas.width,
+                    y: Math.random() * (canvas.height - 100)
+                });
+            }
             
-            // Draw game
+            for (let i = sneakers.length - 1; i >= 0; i--) {
+                const sneaker = sneakers[i];
+                sneaker.x -= 5;
+                
+                // Check collision
+                const dx = sneaker.x - playerX;
+                const dy = sneaker.y - playerY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 30) {
+                    score += 10;
+                    sneakers.splice(i, 1);
+                    continue;
+                }
+                
+                if (sneaker.x < -20) {
+                    sneakers.splice(i, 1);
+                }
+            }
+            
+            // Draw everything
             draw();
             
             // Next frame
@@ -191,58 +109,22 @@
             
             // Draw ground
             ctx.fillStyle = '#90EE90';
-            ctx.fillRect(0, groundY + 40, canvas.width, canvas.height - groundY - 40);
+            ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
             
-            // Draw player (animated dog)
-            frameCounter++;
-            if (frameCounter >= FRAME_DELAY) {
-                currentFrame = (currentFrame + 1) % SPRITE_FRAMES;
-                frameCounter = 0;
-            }
-            
-            // Draw the current frame of the dog sprite
-            ctx.drawImage(
-                dogSprite,
-                currentFrame * SPRITE_WIDTH, 0,
-                SPRITE_WIDTH, SPRITE_HEIGHT,
-                playerX - SPRITE_WIDTH, playerY - SPRITE_HEIGHT,
-                SPRITE_WIDTH * 2, SPRITE_HEIGHT * 2
-            );
+            // Draw player (simple brown rectangle for now)
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(playerX - 15, playerY - 30, 30, 30);
             
             // Draw sneakers
             ctx.fillStyle = '#FFFFFF';
-            for (let sneaker of sneakers) {
+            for (const sneaker of sneakers) {
                 ctx.fillRect(sneaker.x, sneaker.y, 20, 10);
             }
-        }
-        
-        function updateSneakers() {
-            // Create new sneaker
-            if (Math.random() < 0.02) {
-                sneakers.push({
-                    x: canvas.width,
-                    y: Math.random() * (groundY - 100)
-                });
-            }
             
-            // Update sneaker positions
-            for (let i = sneakers.length - 1; i >= 0; i--) {
-                const sneaker = sneakers[i];
-                sneaker.x -= SNEAKER_SPEED;
-                
-                // Check collision with player
-                if (Math.abs(sneaker.x - playerX) < 20 && Math.abs(sneaker.y - playerY) < 20) {
-                    score += 10;
-                    document.getElementById('score').textContent = 'SCORE: ' + score;
-                    sneakers.splice(i, 1);
-                    continue;
-                }
-                
-                // Remove if off screen
-                if (sneaker.x < -20) {
-                    sneakers.splice(i, 1);
-                }
-            }
+            // Draw score
+            ctx.fillStyle = '#000';
+            ctx.font = '20px Arial';
+            ctx.fillText('Score: ' + score, 10, 30);
         }
         
         // Event listeners
@@ -264,32 +146,29 @@
             }
         }
         
-        function startGame() {
+        // Start button
+        const startButton = document.createElement('button');
+        startButton.textContent = 'Start Game';
+        startButton.style.position = 'absolute';
+        startButton.style.top = '50%';
+        startButton.style.left = '50%';
+        startButton.style.transform = 'translate(-50%, -50%)';
+        startButton.style.padding = '10px 20px';
+        startButton.style.fontSize = '20px';
+        startButton.style.cursor = 'pointer';
+        document.body.appendChild(startButton);
+        
+        startButton.onclick = function() {
+            gameRunning = true;
             score = 0;
-            timeLeft = 30;
             playerX = 100;
-            playerY = groundY;
+            playerY = canvas.height - 50;
             playerVelY = 0;
             isJumping = false;
             sneakers = [];
-            
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('score').textContent = 'SCORE: 0';
-            gameRunning = true;
-            lastTime = performance.now();
-            requestAnimationFrame(update);
-        }
-        
-        function gameOver() {
-            gameRunning = false;
-            document.getElementById('startScreen').style.display = 'flex';
-            if (window.TelegramGameProxy) {
-                window.TelegramGameProxy.setScore(score);
-            }
-        }
-        
-        // Initialize game
-        updateShopUI();
+            startButton.style.display = 'none';
+            update();
+        };
     </script>
 </body>
 </html>
