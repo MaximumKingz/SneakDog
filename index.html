@@ -46,8 +46,6 @@
         
         #score { top: 20px; left: 20px; }
         #time { top: 20px; right: 20px; }
-        #combo { top: 60px; left: 20px; color: #FFC107; }
-        #powerup { top: 60px; right: 20px; color: #2196F3; }
         
         #startScreen {
             position: fixed;
@@ -109,206 +107,241 @@
 <body>
     <canvas id="gameCanvas"></canvas>
     <div id="score" class="hud-item">SCORE: 0</div>
-    <div id="combo" class="hud-item">COMBO: x1</div>
-    <div id="powerup" class="hud-item">READY!</div>
     <div id="time" class="hud-item">TIME: 30s</div>
     <div id="startScreen">
         <h1 class="title">SneakDog</h1>
-        <p class="subtitle">CATCH THE SNEAKERS!<br>DOUBLE-TAP TO DOUBLE-JUMP!<br>COLLECT POWER-UPS!</p>
+        <p class="subtitle">CATCH THE SNEAKERS!<br>PRESS SPACE OR TAP TO JUMP</p>
         <button onclick="startGame()" class="button">START GAME</button>
     </div>
 
     <script>
-        // ... (previous canvas setup code remains the same) ...
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score');
+        const timeDisplay = document.getElementById('time');
+        const startScreen = document.getElementById('startScreen');
+
+        // Game variables
+        let score = 0;
+        let timeLeft = 30;
+        let gameRunning = false;
+        let lastTime = 0;
+
+        // Player variables
+        let playerX = 100;
+        let playerY = 0;
+        let playerVelY = 0;
+        let isJumping = false;
+        const gravity = 0.5;
+        const jumpForce = -12;
+        let groundY;
+
+        // Sneaker variables
+        let sneakers = [];
+        const sneakerSpeed = 5;
         
-        // New game mechanics variables
-        let combo = 1;
-        let lastCatchTime = 0;
-        let canDoubleJump = true;
-        let hasPowerup = false;
-        let powerupType = null;
-        let powerupTimeLeft = 0;
-        
-        // Powerup types
-        const POWERUPS = {
-            SPEED: { color: '#2196F3', name: 'SPEED' },
-            MAGNET: { color: '#9C27B0', name: 'MAGNET' },
-            DOUBLE: { color: '#FFC107', name: 'DOUBLE' }
-        };
-        
-        // Different sneaker types
-        const SNEAKER_TYPES = [
-            { color: '#ffffff', points: 10, chance: 0.7 },
-            { color: '#FFC107', points: 20, chance: 0.2 },
-            { color: '#2196F3', points: 30, chance: 0.1 }
-        ];
-        
+        // Animation frame counter
+        let frameCount = 0;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth - 40;
+            canvas.height = window.innerHeight - 40;
+            groundY = canvas.height - 50;
+            playerY = groundY;
+        }
+
         function spawnSneaker() {
-            // Determine sneaker type based on chances
-            let rand = Math.random();
-            let type = SNEAKER_TYPES[0];
-            let cumChance = 0;
+            sneakers.push({
+                x: canvas.width,
+                y: Math.random() * (groundY - 150) + 50,
+                rotation: Math.random() * Math.PI * 2,
+                collected: false,
+                points: Math.random() < 0.2 ? 20 : 10  // 20% chance for golden sneaker
+            });
+        }
+
+        function drawPlayer() {
+            ctx.save();
+            ctx.translate(playerX, playerY - 32);
             
-            for (let t of SNEAKER_TYPES) {
-                cumChance += t.chance;
-                if (rand <= cumChance) {
-                    type = t;
-                    break;
-                }
-            }
+            // Draw dog body
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(0, 0, 32, 32);
             
-            // Randomly spawn power-up instead of sneaker
-            if (Math.random() < 0.1 && !hasPowerup) {
-                sneakers.push({
-                    x: canvas.width,
-                    y: Math.random() * (groundY - 150) + 50,
-                    isPowerup: true,
-                    type: Object.values(POWERUPS)[Math.floor(Math.random() * 3)],
-                    collected: false,
-                    rotation: Math.random() * Math.PI * 2
-                });
-            } else {
-                sneakers.push({
-                    x: canvas.width,
-                    y: Math.random() * (groundY - 150) + 50,
-                    type: type,
-                    collected: false,
-                    rotation: Math.random() * Math.PI * 2
-                });
-            }
-        }
-        
-        function activatePowerup(type) {
-            powerupType = type;
-            powerupTimeLeft = 10;
-            hasPowerup = true;
+            // Draw eyes
+            ctx.fillStyle = 'white';
+            ctx.fillRect(20, 8, 6, 6);
             
-            switch(type.name) {
-                case 'SPEED':
-                    playerSpeed *= 1.5;
-                    break;
-                case 'DOUBLE':
-                    combo *= 2;
-                    break;
-                // Magnet effect is handled in updateSneakers
-            }
+            // Draw running legs
+            const legOffset = Math.sin(frameCount * 0.2) * 5;
+            ctx.fillRect(8, 32, 4, 8 + legOffset);
+            ctx.fillRect(20, 32, 4, 8 - legOffset);
             
-            document.getElementById('powerup').style.color = type.color;
-            document.getElementById('powerup').textContent = `${type.name}: ${Math.ceil(powerupTimeLeft)}s`;
+            ctx.restore();
         }
-        
-        function updatePowerups(deltaTime) {
-            if (hasPowerup) {
-                powerupTimeLeft -= deltaTime;
-                document.getElementById('powerup').textContent = 
-                    `${powerupType.name}: ${Math.ceil(powerupTimeLeft)}s`;
-                
-                if (powerupTimeLeft <= 0) {
-                    hasPowerup = false;
-                    powerupType = null;
-                    playerSpeed = basePlayerSpeed;
-                    document.getElementById('powerup').style.color = '#2196F3';
-                    document.getElementById('powerup').textContent = 'READY!';
-                }
+
+        function drawSneaker(x, y, rotation, points) {
+            ctx.save();
+            ctx.translate(x + 12, y + 8);
+            ctx.rotate(rotation);
+            
+            // Draw sneaker
+            ctx.fillStyle = points === 20 ? '#FFD700' : 'white';  // Golden sneakers
+            ctx.fillRect(-12, -4, 24, 8);
+            ctx.fillStyle = '#ddd';
+            ctx.fillRect(-8, -8, 16, 4);
+            
+            ctx.restore();
+        }
+
+        function drawBackground() {
+            // Sky gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, groundY);
+            gradient.addColorStop(0, '#1a237e');
+            gradient.addColorStop(1, '#3949ab');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, groundY);
+            
+            // Ground
+            ctx.fillStyle = '#2d4619';
+            ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
+            
+            // Ground pattern
+            ctx.fillStyle = '#1a2f0d';
+            for(let x = 0; x < canvas.width; x += 20) {
+                ctx.fillRect(x, groundY, 2, canvas.height - groundY);
             }
         }
-        
-        function updateCombo() {
-            const now = performance.now();
-            if (now - lastCatchTime < 2000) { // 2 second window for combo
-                combo++;
-            } else {
-                combo = 1;
-            }
-            lastCatchTime = now;
-            document.getElementById('combo').textContent = `COMBO: x${combo}`;
-        }
-        
-        function jump() {
-            if (!isJumping) {
-                playerVelY = jumpForce;
-                isJumping = true;
-                canDoubleJump = true;
-            } else if (canDoubleJump) {
-                playerVelY = jumpForce * 0.8;
-                canDoubleJump = false;
+
+        function updatePlayer() {
+            playerVelY += gravity;
+            playerY += playerVelY;
+
+            if (playerY > groundY) {
+                playerY = groundY;
+                playerVelY = 0;
+                isJumping = false;
             }
         }
-        
+
         function updateSneakers() {
             for (let i = sneakers.length - 1; i >= 0; i--) {
                 const sneaker = sneakers[i];
-                
-                // Magnet effect
-                if (hasPowerup && powerupType.name === 'MAGNET') {
-                    const dx = playerX - sneaker.x;
-                    const dy = (playerY - 32) - sneaker.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 200) {
-                        sneaker.x += dx * 0.1;
-                        sneaker.y += dy * 0.1;
-                    }
-                }
-                
                 sneaker.x -= sneakerSpeed;
                 sneaker.rotation += 0.05;
-                
-                // Collision check
+
                 if (!sneaker.collected &&
                     playerX < sneaker.x + 24 &&
                     playerX + 32 > sneaker.x &&
                     playerY - 32 < sneaker.y + 16 &&
                     playerY > sneaker.y) {
-                    
                     sneaker.collected = true;
+                    score += sneaker.points;
+                    timeLeft = Math.min(30, timeLeft + 1);
                     
-                    if (sneaker.isPowerup) {
-                        activatePowerup(sneaker.type);
-                    } else {
-                        const points = sneaker.type.points * combo;
-                        score += points;
-                        timeLeft = Math.min(30, timeLeft + 1);
-                        updateCombo();
-                        createCollectionEffect(sneaker.x, sneaker.y, `+${points}`);
-                    }
+                    // Score popup
+                    ctx.fillStyle = sneaker.points === 20 ? '#FFD700' : '#4CAF50';
+                    ctx.font = '16px "Press Start 2P"';
+                    ctx.fillText(`+${sneaker.points}`, sneaker.x, sneaker.y - 20);
                 }
-                
+
                 if (sneaker.x < -24 || sneaker.collected) {
                     sneakers.splice(i, 1);
                 }
             }
-            
+
             if (Math.random() < 0.02) {
                 spawnSneaker();
             }
         }
-        
-        // ... (rest of the game code remains similar, just update the draw functions to use sneaker.type.color) ...
-        
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawBackground();
+            drawPlayer();
+
+            sneakers.forEach(sneaker => {
+                if (!sneaker.collected) {
+                    drawSneaker(sneaker.x, sneaker.y, sneaker.rotation, sneaker.points);
+                }
+            });
+        }
+
+        function update(currentTime) {
+            if (!gameRunning) return;
+
+            const deltaTime = (currentTime - lastTime) / 1000;
+            lastTime = currentTime;
+
+            timeLeft -= deltaTime;
+            if (timeLeft <= 0) {
+                gameOver();
+                return;
+            }
+
+            frameCount++;
+            updatePlayer();
+            updateSneakers();
+            draw();
+
+            scoreDisplay.textContent = `SCORE: ${score}`;
+            timeDisplay.textContent = `TIME: ${Math.ceil(timeLeft)}s`;
+
+            requestAnimationFrame(update);
+        }
+
+        function jump() {
+            if (!isJumping) {
+                playerVelY = jumpForce;
+                isJumping = true;
+            }
+        }
+
+        function handleInput(event) {
+            if (!gameRunning) return;
+            
+            if (event.type === 'keydown' && event.code === 'Space') {
+                jump();
+            } else if (event.type === 'touchstart' || event.type === 'click') {
+                jump();
+            }
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            startScreen.style.display = 'flex';
+            startScreen.querySelector('.title').textContent = 'GAME OVER!';
+            startScreen.querySelector('.subtitle').textContent = `FINAL SCORE: ${score}`;
+            if (window.TelegramGameProxy) {
+                window.TelegramGameProxy.setScore(score);
+            }
+        }
+
         function startGame() {
             score = 0;
             timeLeft = 30;
-            combo = 1;
-            hasPowerup = false;
-            powerupType = null;
             playerY = groundY;
             playerVelY = 0;
             isJumping = false;
-            canDoubleJump = true;
             sneakers = [];
             frameCount = 0;
-            
-            document.getElementById('combo').textContent = 'COMBO: x1';
-            document.getElementById('powerup').textContent = 'READY!';
-            document.getElementById('powerup').style.color = '#2196F3';
             
             startScreen.style.display = 'none';
             gameRunning = true;
             lastTime = performance.now();
             requestAnimationFrame(update);
         }
-        
-        // ... (rest of the code remains the same) ...
+
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('keydown', handleInput);
+        canvas.addEventListener('click', handleInput);
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleInput(e);
+        });
+
+        resizeCanvas();
     </script>
 </body>
 </html>
