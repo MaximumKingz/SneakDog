@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Bot Configuration
 TOKEN = "7719239069:AAGfskyBni2VejQMAxv_nX0BKZIxrkpcjPc"
-WEBAPP_URL = "https://sneakdog.netlify.app/game.html"  # We'll update this once Netlify is set up
+WEBAPP_URL = "https://maximumkingz.github.io/SneakDog/"  # Root URL of GitHub Pages
 
 def signal_handler(signum, frame):
     """Handle shutdown signals gracefully"""

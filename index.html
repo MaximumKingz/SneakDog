@@ -206,71 +206,148 @@
     </div>
 
     <script>
-        // ... (previous game code remains the same until game variables) ...
+        // Game variables
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size
+        canvas.width = 320;
+        canvas.height = 480;
+        
+        // Game state
+        let score = 0;
+        let coins = parseInt(localStorage.getItem('coins')) || 0;
+        let gameRunning = false;
+        let lastTime = 0;
+        let timeLeft = 30;
+        let frameCount = 0;
+        
+        // Player variables
+        const groundY = canvas.height - 60;
+        let playerY = groundY;
+        let playerVelY = 0;
+        let isJumping = false;
+        const GRAVITY = 0.8;
+        const JUMP_FORCE = -15;
+        
+        // Sneaker variables
+        let sneakers = [];
+        const SNEAKER_SPEED = 3;
+        
+        // Load upgrades from localStorage
+        let upgrades = {
+            jump: parseInt(localStorage.getItem('jumpLevel')) || 0,
+            magnet: parseInt(localStorage.getItem('magnetLevel')) || 0,
+            coin: parseInt(localStorage.getItem('coinLevel')) || 0,
+            time: parseInt(localStorage.getItem('timeLevel')) || 0
+        };
+        
+        // Update UI with current coins
+        document.getElementById('coins').textContent = 'COINS: ' + coins;
+        
+        // Game loop
+        function update(timestamp) {
+            if (!gameRunning) return;
+            
+            const deltaTime = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+            
+            // Update time
+            timeLeft -= deltaTime;
+            if (timeLeft <= 0) {
+                gameOver();
+                return;
+            }
+            document.getElementById('time').textContent = 'TIME: ' + Math.ceil(timeLeft) + 's';
+            
+            // Update player
+            if (isJumping) {
+                playerY += playerVelY;
+                playerVelY += GRAVITY;
+                
+                if (playerY >= groundY) {
+                    playerY = groundY;
+                    isJumping = false;
+                    playerVelY = 0;
+                }
+            }
+            
+            // Update sneakers
+            updateSneakers();
+            
+            // Draw game
+            draw();
+            
+            // Next frame
+            requestAnimationFrame(update);
+        }
+        
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = '#87CEEB';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw ground
+            ctx.fillStyle = '#90EE90';
+            ctx.fillRect(0, groundY + 40, canvas.width, canvas.height - groundY - 40);
+            
+            // Draw player
+            ctx.fillStyle = '#8B4513';
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, playerY, 20, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw sneakers
+            ctx.fillStyle = '#FFFFFF';
+            for (let sneaker of sneakers) {
+                ctx.fillRect(sneaker.x, sneaker.y, 20, 10);
+            }
+        }
+        
+        // Event listeners
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space') {
+                jump();
+            }
+        });
+        
+        canvas.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            jump();
+        });
         
         // Upgrade system
-        const upgrades = {
+        const upgradeCosts = {
             jump: { level: 0, cost: 50, maxLevel: 5, multiplier: 1.5 },
             magnet: { level: 0, cost: 75, maxLevel: 5, multiplier: 1.5 },
             coin: { level: 0, cost: 100, maxLevel: 5, multiplier: 1.5 },
             time: { level: 0, cost: 150, maxLevel: 5, multiplier: 1.5 }
         };
         
-        let coins = 0;
-        
-        // Load saved progress
-        try {
-            const saved = localStorage.getItem('sneakdog_save');
-            if (saved) {
-                const data = JSON.parse(saved);
-                coins = data.coins || 0;
-                Object.assign(upgrades, data.upgrades || {});
-                updateShopUI();
-            }
-        } catch (e) {
-            console.error('Error loading save:', e);
-        }
-        
-        function saveProgress() {
-            try {
-                localStorage.setItem('sneakdog_save', JSON.stringify({
-                    coins: coins,
-                    upgrades: upgrades
-                }));
-            } catch (e) {
-                console.error('Error saving:', e);
-            }
-        }
-        
         function updateShopUI() {
-            document.getElementById('coins').textContent = `COINS: ${coins}`;
+            document.getElementById('coins').textContent = 'COINS: ' + coins;
             
-            for (const [type, upgrade] of Object.entries(upgrades)) {
+            for (const [type, upgrade] of Object.entries(upgradeCosts)) {
                 const levelElem = document.getElementById(`${type}Level`);
                 const costElem = document.getElementById(`${type}Cost`);
-                if (levelElem) levelElem.textContent = upgrade.level;
+                if (levelElem) levelElem.textContent = upgrades[type];
                 if (costElem) {
-                    const cost = Math.floor(upgrade.cost * Math.pow(upgrade.multiplier, upgrade.level));
-                    costElem.textContent = upgrade.level >= upgrade.maxLevel ? 'MAX' : cost;
+                    const cost = Math.floor(upgrade.cost * Math.pow(upgrade.multiplier, upgrades[type]));
+                    costElem.textContent = upgrades[type] >= upgrade.maxLevel ? 'MAX' : cost;
                 }
             }
         }
         
         function buyUpgrade(type) {
-            const upgrade = upgrades[type];
-            if (upgrade.level >= upgrade.maxLevel) return;
+            const upgrade = upgradeCosts[type];
+            if (upgrades[type] >= upgrade.maxLevel) return;
             
-            const cost = Math.floor(upgrade.cost * Math.pow(upgrade.multiplier, upgrade.level));
+            const cost = Math.floor(upgrade.cost * Math.pow(upgrade.multiplier, upgrades[type]));
             if (coins >= cost) {
                 coins -= cost;
-                upgrade.level++;
+                upgrades[type]++;
+                localStorage.setItem(`${type}Level`, upgrades[type]);
                 updateShopUI();
-                saveProgress();
-                
-                // Visual feedback
-                const button = event.target;
-                button.style.transform = 'scale(1.1)';
-                setTimeout(() => button.style.transform = '', 100);
             }
         }
         
@@ -285,84 +362,9 @@
             document.getElementById('startScreen').style.display = 'flex';
         }
         
-        // Modify game mechanics based on upgrades
-        function getJumpForce() {
-            return -12 * (1 + upgrades.jump.level * 0.2);
-        }
-        
-        function getMagnetRange() {
-            return 100 + upgrades.magnet.level * 50;
-        }
-        
-        function getCoinMultiplier() {
-            return 1 + upgrades.coin.level * 0.2;
-        }
-        
-        function getStartTime() {
-            return 30 + upgrades.time.level * 5;
-        }
-        
-        // Update game mechanics to use upgrades
-        function jump() {
-            if (!isJumping) {
-                playerVelY = getJumpForce();
-                isJumping = true;
-            }
-        }
-        
-        function updateSneakers() {
-            const magnetRange = getMagnetRange();
-            
-            for (let i = sneakers.length - 1; i >= 0; i--) {
-                const sneaker = sneakers[i];
-                
-                // Magnet effect
-                const dx = playerX - sneaker.x;
-                const dy = (playerY - 32) - sneaker.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                
-                if (dist < magnetRange) {
-                    sneaker.x += dx * 0.1;
-                    sneaker.y += dy * 0.1;
-                } else {
-                    sneaker.x -= sneakerSpeed;
-                }
-                
-                sneaker.rotation += 0.05;
-                
-                // Collection check
-                if (!sneaker.collected &&
-                    playerX < sneaker.x + 24 &&
-                    playerX + 32 > sneaker.x &&
-                    playerY - 32 < sneaker.y + 16 &&
-                    playerY > sneaker.y) {
-                    
-                    sneaker.collected = true;
-                    const points = sneaker.points;
-                    score += points;
-                    coins += Math.ceil(points * getCoinMultiplier() / 10);
-                    timeLeft = Math.min(getStartTime(), timeLeft + 1);
-                    updateShopUI();
-                    
-                    // Score popup
-                    ctx.fillStyle = sneaker.points === 20 ? '#FFD700' : '#4CAF50';
-                    ctx.font = '16px "Press Start 2P"';
-                    ctx.fillText(`+${points}`, sneaker.x, sneaker.y - 20);
-                }
-                
-                if (sneaker.x < -24 || sneaker.collected) {
-                    sneakers.splice(i, 1);
-                }
-            }
-            
-            if (Math.random() < 0.02) {
-                spawnSneaker();
-            }
-        }
-        
         function startGame() {
             score = 0;
-            timeLeft = getStartTime();
+            timeLeft = 30 + upgrades.time * 5;
             playerY = groundY;
             playerVelY = 0;
             isJumping = false;
@@ -373,21 +375,68 @@
             gameRunning = true;
             lastTime = performance.now();
             requestAnimationFrame(update);
+            
+            // Update score display
+            document.getElementById('score').textContent = 'SCORE: ' + score;
         }
         
         function gameOver() {
             gameRunning = false;
-            saveProgress();
+            
+            // Add bonus coins based on score and upgrades
+            const bonusCoins = Math.floor(score * (1 + upgrades.coin * 0.2));
+            coins += bonusCoins;
+            localStorage.setItem('coins', coins);
+            document.getElementById('coins').textContent = 'COINS: ' + coins;
+            
             document.getElementById('startScreen').style.display = 'flex';
-            document.getElementById('startScreen').querySelector('.title').textContent = 'GAME OVER!';
-            document.getElementById('startScreen').querySelector('.subtitle').textContent = 
-                `SCORE: ${score}\nCOINS EARNED: ${Math.ceil(score * getCoinMultiplier() / 10)}`;
-            if (window.TelegramGameProxy) {
-                window.TelegramGameProxy.setScore(score);
+            updateShopUI();
+        }
+        
+        function jump() {
+            if (!isJumping && gameRunning) {
+                isJumping = true;
+                playerVelY = JUMP_FORCE * (1 - upgrades.jump * 0.1);
             }
         }
         
-        // ... (rest of the game code remains the same) ...
+        function updateSneakers() {
+            frameCount++;
+            
+            // Create new sneaker
+            if (frameCount % 60 === 0) {
+                sneakers.push({
+                    x: Math.random() * (canvas.width - 20),
+                    y: -10
+                });
+            }
+            
+            // Update sneaker positions
+            for (let i = sneakers.length - 1; i >= 0; i--) {
+                const sneaker = sneakers[i];
+                sneaker.y += SNEAKER_SPEED;
+                
+                // Check collision with player
+                const dx = (canvas.width / 2) - (sneaker.x + 10);
+                const dy = playerY - (sneaker.y + 5);
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 30 + upgrades.magnet * 5) {
+                    score += 10;
+                    document.getElementById('score').textContent = 'SCORE: ' + score;
+                    sneakers.splice(i, 1);
+                    continue;
+                }
+                
+                // Remove if off screen
+                if (sneaker.y > canvas.height) {
+                    sneakers.splice(i, 1);
+                }
+            }
+        }
+        
+        // Initialize shop UI
+        updateShopUI();
     </script>
 </body>
 </html>
