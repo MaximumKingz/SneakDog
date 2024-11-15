@@ -120,22 +120,25 @@
         let targetY = 0;
         let timeLeft = 30;
         let difficulty = 1;
-        let dogSpeed = 0.02;  
-        let maxSpeed = 3;     
+        let dogSpeed = 0.015;  
+        let maxSpeed = 2;     
         let lastUpdateTime = 0;
         let particles = [];
         let dogVelocityX = 0;
         let dogVelocityY = 0;
-        let friction = 0.95;  
+        let friction = 0.92;  
         let dogFrame = 0;
         let frameCount = 0;
         let grassTiles = [];
         let lastJumpTime = 0;
-        let jumpCooldown = 1000; 
+        let jumpCooldown = 1500; 
+        let isMoving = false;
+        let waitTime = 0;
+        let waitDuration = 1000; 
 
         // Load dog sprite
         const dogImage = new Image();
-        dogImage.src = 'data:image/png;base64,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';
+        dogImage.src = 'data:image/png;base64,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';
         
         // Load grass tile
         const grassImage = new Image();
@@ -191,36 +194,50 @@
         function newDogPosition() {
             const now = Date.now();
             if (now - lastJumpTime < jumpCooldown) {
-                return; 
+                return;
             }
-            lastJumpTime = now;
-
-            const maxDistance = 100 + (difficulty * 5); 
-            const minDistance = 30;  
             
+            // Sometimes make the dog wait a bit
+            if (Math.random() < 0.3) {
+                waitTime = now;
+                isMoving = false;
+                return;
+            }
+
+            lastJumpTime = now;
+            isMoving = true;
+
+            // Much shorter jumps
+            const maxDistance = 60 + (difficulty * 3);
+            const minDistance = 20;
+            
+            // Try to move away from the last click position
             let angle = Math.random() * Math.PI * 2;
             let distance = Math.random() * (maxDistance - minDistance) + minDistance;
             
             let newTargetX = dogX + Math.cos(angle) * distance;
             let newTargetY = dogY + Math.sin(angle) * distance;
             
-            const padding = 32;
+            // Keep well within bounds
+            const padding = 40;
             newTargetX = Math.max(padding, Math.min(canvas.width - padding - 32, newTargetX));
             newTargetY = Math.max(padding, Math.min(canvas.height - padding - 32, newTargetY));
             
             targetX = newTargetX;
             targetY = newTargetY;
             
+            // Gentler initial velocity
             const dx = targetX - dogX;
             const dy = targetY - dogY;
             const length = Math.sqrt(dx * dx + dy * dy);
             
             if (length > 0) {
-                dogVelocityX = (dx / length) * (2 + difficulty * 0.5);
-                dogVelocityY = (dy / length) * (2 + difficulty * 0.5);
+                dogVelocityX = (dx / length) * (1 + difficulty * 0.2);
+                dogVelocityY = (dy / length) * (1 + difficulty * 0.2);
             }
             
-            dogSpeed = Math.min(0.02 + (difficulty * 0.002), 0.04);
+            // Very gradual speed increase
+            dogSpeed = Math.min(0.015 + (difficulty * 0.001), 0.025);
         }
 
         function updateGame(timestamp) {
@@ -228,6 +245,7 @@
 
             const deltaTime = timestamp - lastUpdateTime;
             lastUpdateTime = timestamp;
+            const now = Date.now();
 
             if (deltaTime) {
                 timeLeft = Math.max(0, timeLeft - deltaTime / 1000);
@@ -249,45 +267,64 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
+            // Draw grass background
             grassTiles.forEach(tile => {
                 ctx.drawImage(grassImage, tile.x, tile.y, 32, 32);
             });
+
+            if (!isMoving && now - waitTime >= waitDuration) {
+                newDogPosition();
+            }
             
-            const dx = targetX - dogX;
-            const dy = targetY - dogY;
-            const distanceToTarget = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distanceToTarget > 5) {
-                dogVelocityX += dx * dogSpeed * 0.5;
-                dogVelocityY += dy * dogSpeed * 0.5;
+            if (isMoving) {
+                const dx = targetX - dogX;
+                const dy = targetY - dogY;
+                const distanceToTarget = Math.sqrt(dx * dx + dy * dy);
                 
-                dogVelocityX *= friction;
-                dogVelocityY *= friction;
-                
-                const currentSpeed = Math.sqrt(dogVelocityX * dogVelocityX + dogVelocityY * dogVelocityY);
-                if (currentSpeed > maxSpeed) {
-                    const scale = maxSpeed / currentSpeed;
-                    dogVelocityX *= scale;
-                    dogVelocityY *= scale;
-                }
-                
-                dogX += dogVelocityX;
-                dogY += dogVelocityY;
-            } else {
-                const now = Date.now();
-                if (now - lastJumpTime >= jumpCooldown) {
-                    newDogPosition();
+                if (distanceToTarget > 2) {
+                    // Gentler acceleration
+                    dogVelocityX += dx * dogSpeed * 0.3;
+                    dogVelocityY += dy * dogSpeed * 0.3;
+                    
+                    // Strong friction
+                    dogVelocityX *= friction;
+                    dogVelocityY *= friction;
+                    
+                    // Strict speed limit
+                    const currentSpeed = Math.sqrt(dogVelocityX * dogVelocityX + dogVelocityY * dogVelocityY);
+                    if (currentSpeed > maxSpeed) {
+                        const scale = maxSpeed / currentSpeed;
+                        dogVelocityX *= scale;
+                        dogVelocityY *= scale;
+                    }
+                    
+                    // Update position
+                    dogX += dogVelocityX;
+                    dogY += dogVelocityY;
+                } else {
+                    // Stop moving when reached target
+                    isMoving = false;
+                    waitTime = now;
+                    dogVelocityX = 0;
+                    dogVelocityY = 0;
                 }
             }
             
+            // Keep dog within bounds
             dogX = Math.max(0, Math.min(canvas.width - 32, dogX));
             dogY = Math.max(0, Math.min(canvas.height - 32, dogY));
             
-            frameCount++;
-            if (frameCount % 15 === 0) {  
-                dogFrame = (dogFrame + 1) % 4;
+            // Slower animation when moving, no animation when still
+            if (isMoving) {
+                frameCount++;
+                if (frameCount % 12 === 0) {
+                    dogFrame = (dogFrame + 1) % 4;
+                }
+            } else {
+                dogFrame = 0; // Standing still frame
             }
             
+            // Draw dog with direction
             ctx.save();
             ctx.translate(dogX + 16, dogY + 16);
             if (dogVelocityX < 0) ctx.scale(-1, 1);
@@ -310,16 +347,30 @@
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
 
-            if (x >= dogX && x <= dogX + 32 && y >= dogY && y <= dogY + 32) {
+            const hitboxPadding = 4; // Slightly larger hitbox
+            if (x >= dogX - hitboxPadding && 
+                x <= dogX + 32 + hitboxPadding && 
+                y >= dogY - hitboxPadding && 
+                y <= dogY + 32 + hitboxPadding) {
+                
                 createParticles(dogX, dogY);
                 
-                score += Math.ceil(difficulty * 0.5);
+                // More consistent scoring
+                score += 1;
+                if (difficulty > 2) score += 1;
+                if (difficulty > 4) score += 1;
+                
                 scoreDisplay.textContent = `SCORE: ${score} TIME: ${Math.ceil(timeLeft)}s`;
                 
-                difficulty += 0.1;
+                // Very gradual difficulty increase
+                difficulty += 0.05;
                 
-                timeLeft = Math.min(30, timeLeft + 1);
+                // Small time bonus
+                timeLeft = Math.min(30, timeLeft + 0.5);
                 
+                // Force immediate movement
+                isMoving = false;
+                waitTime = 0;
                 newDogPosition();
                 
                 if (TelegramGameProxy) {
@@ -334,12 +385,14 @@
             score = 0;
             timeLeft = 30;
             difficulty = 1;
-            dogSpeed = 0.02;  
+            dogSpeed = 0.015;
             dogVelocityX = 0;
             dogVelocityY = 0;
             particles = [];
             dogFrame = 0;
             frameCount = 0;
+            isMoving = false;
+            waitTime = 0;
             scoreDisplay.textContent = 'SCORE: 0 TIME: 30s';
             dogX = canvas.width/2 - 16;
             dogY = canvas.height/2 - 16;
