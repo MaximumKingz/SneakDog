@@ -1,6 +1,7 @@
 import logging
 import sys
 import os
+import signal
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 from dotenv import load_dotenv
@@ -8,7 +9,7 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Enable detailed logging
+# Enable logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO,
@@ -28,6 +29,11 @@ if not TOKEN:
 
 WEBAPP_URL = "https://maximumkingz.github.io/SneakDog/game.html"
 
+def signal_handler(signum, frame):
+    """Handle shutdown signals gracefully"""
+    logger.info("Received shutdown signal. Cleaning up...")
+    sys.exit(0)
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /start is issued."""
     try:
@@ -35,7 +41,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         user = update.effective_user
         logger.info(f"Processing /start command for user {user.id} (@{user.username})")
 
-        # Create Mini App button
         keyboard = [[
             InlineKeyboardButton(
                 "🎮 Play SneakDog!",
@@ -44,7 +49,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         ]]
         reply_markup = InlineKeyboardMarkup(keyboard)
         
-        # Send welcome message
         message = await update.message.reply_text(
             "🐕 Welcome to SneakDog! 🎮\n\n"
             "Ready to catch that sneaky dog?\n"
@@ -68,23 +72,36 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     except Exception as e:
         logger.error(f"Error in button callback: {str(e)}", exc_info=True)
 
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Log Errors caused by Updates."""
+    logger.error("Exception while handling an update:", exc_info=context.error)
+
 def main() -> None:
     """Start the bot."""
     try:
+        # Set up signal handlers
+        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGTERM, signal_handler)
+        
         logger.info("Starting bot with token: " + TOKEN[:10] + "...")
         
         # Create the Application
         application = Application.builder().token(TOKEN).build()
-        logger.info("Application built successfully")
-
+        
         # Add handlers
         application.add_handler(CommandHandler("start", start))
         application.add_handler(CallbackQueryHandler(button_callback))
+        application.add_error_handler(error_handler)
+        
         logger.info("Handlers registered successfully")
-
-        # Start the Bot
+        
+        # Start the Bot with webhook disabled
         logger.info("Starting bot polling...")
-        application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
+        application.run_polling(
+            allowed_updates=Update.ALL_TYPES,
+            drop_pending_updates=True,
+            close_loop=False
+        )
         
     except Exception as e:
         logger.error(f"Critical error in main: {str(e)}", exc_info=True)
