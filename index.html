@@ -373,6 +373,162 @@
                 font-size: 18px;
             }
         }
+
+        /* Dog Character */
+        .dog {
+            position: absolute;
+            width: 80px;
+            height: 60px;
+            pointer-events: none;
+            transform-origin: center;
+            transition: transform 0.1s;
+        }
+
+        .dog-body {
+            position: absolute;
+            width: 60px;
+            height: 30px;
+            background: #8B4513;
+            border-radius: 15px;
+            bottom: 0;
+            left: 10px;
+        }
+
+        .dog-head {
+            position: absolute;
+            width: 35px;
+            height: 35px;
+            background: #8B4513;
+            border-radius: 50%;
+            bottom: 15px;
+            left: 45px;
+            transform-origin: center;
+            animation: headBob 0.5s infinite alternate ease-in-out;
+        }
+
+        .dog-ear-left, .dog-ear-right {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #8B4513;
+            border-radius: 50% 50% 0 0;
+            transform-origin: bottom center;
+        }
+
+        .dog-ear-left {
+            left: -5px;
+            top: -10px;
+            transform: rotate(-30deg);
+            animation: earLeft 0.5s infinite alternate ease-in-out;
+        }
+
+        .dog-ear-right {
+            right: -5px;
+            top: -10px;
+            transform: rotate(30deg);
+            animation: earRight 0.5s infinite alternate ease-in-out;
+        }
+
+        .dog-eye {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #000;
+            border-radius: 50%;
+            top: 12px;
+            right: 8px;
+        }
+
+        .dog-nose {
+            position: absolute;
+            width: 12px;
+            height: 8px;
+            background: #000;
+            border-radius: 50%;
+            top: 18px;
+            right: 2px;
+        }
+
+        .dog-tail {
+            position: absolute;
+            width: 25px;
+            height: 10px;
+            background: #8B4513;
+            border-radius: 5px;
+            bottom: 15px;
+            left: 0;
+            transform-origin: left center;
+            animation: tailWag 0.3s infinite alternate ease-in-out;
+        }
+
+        .dog-leg {
+            position: absolute;
+            width: 10px;
+            height: 15px;
+            background: #8B4513;
+            border-radius: 5px;
+            bottom: -12px;
+        }
+
+        .leg-front {
+            left: 15px;
+            animation: legFront 0.2s infinite alternate ease-in-out;
+        }
+
+        .leg-back {
+            right: 15px;
+            animation: legBack 0.2s infinite alternate ease-in-out;
+        }
+
+        /* Dog Animations */
+        @keyframes headBob {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-2px); }
+        }
+
+        @keyframes earLeft {
+            0% { transform: rotate(-30deg); }
+            100% { transform: rotate(-20deg) translateY(-2px); }
+        }
+
+        @keyframes earRight {
+            0% { transform: rotate(30deg); }
+            100% { transform: rotate(20deg) translateY(-2px); }
+        }
+
+        @keyframes tailWag {
+            0% { transform: rotate(-10deg); }
+            100% { transform: rotate(10deg); }
+        }
+
+        @keyframes legFront {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-2px); }
+        }
+
+        @keyframes legBack {
+            0% { transform: translateY(-2px); }
+            100% { transform: translateY(0); }
+        }
+
+        .dog.jumping {
+            animation: jump 0.4s ease-out;
+        }
+
+        @keyframes jump {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-100px) rotate(5deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        .dog.running .dog-body {
+            animation: bodyRun 0.2s infinite alternate ease-in-out;
+        }
+
+        @keyframes bodyRun {
+            0% { transform: translateY(0) scaleY(1); }
+            100% { transform: translateY(-2px) scaleY(0.95); }
+        }
     </style>
 </head>
 <body>

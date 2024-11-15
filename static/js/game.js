@@ -44,15 +44,16 @@ class SneakDog {
             coinInterval: 1000
         };
         
-        // Initialize player
+        // Initialize player with dog character
         this.player = {
             x: 100,
             y: 0,
-            width: 50,
-            height: 50,
+            width: 80,  // Match dog CSS width
+            height: 60, // Match dog CSS height
             velocityY: 0,
             isJumping: false,
-            canDoubleJump: true
+            canDoubleJump: true,
+            element: this.createDogElement()
         };
         
         // Initialize game objects
@@ -213,6 +214,10 @@ class SneakDog {
     jump() {
         this.player.velocityY = this.settings.jumpForce;
         this.player.isJumping = true;
+        this.player.element.classList.add('jumping');
+        setTimeout(() => {
+            this.player.element.classList.remove('jumping');
+        }, 400); // Match jump animation duration
     }
     
     startGame() {
@@ -227,6 +232,7 @@ class SneakDog {
         this.player.velocityY = 0;
         this.player.isJumping = false;
         this.player.canDoubleJump = true;
+        this.player.element.classList.add('running');
         document.getElementById('score').textContent = '0';
     }
     
@@ -234,9 +240,63 @@ class SneakDog {
         this.gameState = 'menu';
         this.player.y = this.groundY - this.player.height;
         this.player.velocityY = 0;
+        this.player.element.classList.remove('running', 'jumping');
         this.obstacles = [];
         this.gameCoins = [];
         this.score = 0;
+    }
+    
+    createDogElement() {
+        const dog = document.createElement('div');
+        dog.className = 'dog running';
+        
+        // Create dog body
+        const body = document.createElement('div');
+        body.className = 'dog-body';
+        
+        // Create dog head
+        const head = document.createElement('div');
+        head.className = 'dog-head';
+        
+        // Create ears
+        const earLeft = document.createElement('div');
+        earLeft.className = 'dog-ear-left';
+        const earRight = document.createElement('div');
+        earRight.className = 'dog-ear-right';
+        
+        // Create face features
+        const eye = document.createElement('div');
+        eye.className = 'dog-eye';
+        const nose = document.createElement('div');
+        nose.className = 'dog-nose';
+        
+        // Create tail
+        const tail = document.createElement('div');
+        tail.className = 'dog-tail';
+        
+        // Create legs
+        const legFront = document.createElement('div');
+        legFront.className = 'dog-leg leg-front';
+        const legBack = document.createElement('div');
+        legBack.className = 'dog-leg leg-back';
+        
+        // Assemble dog
+        head.appendChild(earLeft);
+        head.appendChild(earRight);
+        head.appendChild(eye);
+        head.appendChild(nose);
+        
+        body.appendChild(legFront);
+        body.appendChild(legBack);
+        
+        dog.appendChild(body);
+        dog.appendChild(head);
+        dog.appendChild(tail);
+        
+        // Add to game container
+        document.getElementById('gameContainer').appendChild(dog);
+        
+        return dog;
     }
     
     spawnObstacle() {
@@ -282,7 +342,7 @@ class SneakDog {
     update() {
         if (this.gameState !== 'playing') return;
         
-        // Update player
+        // Update player physics
         this.player.velocityY += this.settings.gravity;
         this.player.y += this.player.velocityY;
         
@@ -292,7 +352,13 @@ class SneakDog {
             this.player.velocityY = 0;
             this.player.isJumping = false;
             this.player.canDoubleJump = true;
+            this.player.element.classList.add('running');
+        } else {
+            this.player.element.classList.remove('running');
         }
+
+        // Update dog position
+        this.player.element.style.transform = `translate(${this.player.x}px, ${this.player.y}px)`;
         
         // Spawn and update obstacles
         this.spawnObstacle();
@@ -351,6 +417,7 @@ class SneakDog {
     
     gameOver() {
         this.gameState = 'gameover';
+        this.player.element.classList.remove('running', 'jumping');
         if (this.score > this.highScore) {
             this.highScore = this.score;
             localStorage.setItem('highScore', this.highScore);
@@ -371,10 +438,6 @@ class SneakDog {
         this.ctx.fillStyle = '#8B4513';
         this.ctx.fillRect(0, this.groundY, this.canvas.width, this.canvas.height - this.groundY);
         
-        // Draw player
-        this.ctx.fillStyle = '#FF0000';
-        this.ctx.fillRect(this.player.x, this.player.y, this.player.width, this.player.height);
-        
         // Draw obstacles
         this.ctx.fillStyle = '#333';
         this.obstacles.forEach(obstacle => {
@@ -394,6 +457,8 @@ class SneakDog {
             );
             this.ctx.fill();
         });
+        
+        // No need to draw player as it's now a DOM element
         
         // Draw game state messages
         if (this.gameState === 'menu') {
