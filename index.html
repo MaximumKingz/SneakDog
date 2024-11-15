@@ -214,6 +214,18 @@
         canvas.width = 320;
         canvas.height = 480;
         
+        // Load dog sprites
+        const dogSprite = new Image();
+        dogSprite.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAAYCAYAAAAF6fiUAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDYuMC1jMDAyIDc5LjE2NDQ4OCwgMjAyMC8wNy8xMC0yMjowNjo1MyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIDIyLjAgKFdpbmRvd3MpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjY5NjdEOTREMjM1RDExRUU4RjkyOThENzZGNTU5NkJEIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjY5NjdEOTRFMjM1RDExRUU4RjkyOThENzZGNTU5NkJEIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6Njk2N0Q5NEIyMzVEMTFFRThGOTI5OEQ3NkY1NTk2QkQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6Njk2N0Q5NEMyMzVEMTFFRThGOTI5OEQ3NkY1NTk2QkQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5Yj+WxAAAB0klEQVR42uyZQUsCURTH3wyKgkHQwkVtWkQLF0GbwFW0ahO0Ddq1aNG2TdCuRbu2QV8h+gTRJ4i+QBsXLVoUtAiCghYKLQoqAqHe0/+Dh8MwM46OnXlw4c+bN/PevHn/mXvPvFGcc7XRpCgKr2f+qvYvwb+YAGqQAEiAJEACJAESIAmQBEgCJAGSAEmAJEASIAmQBEgCJAGSAEmAJEASIAmQBEgC/iQBVVGUX0vAOI7/GwLK5TLPZrM8n8/zUqnEK5UK7+rq4p2dnby7u5v39vbyWCzGBwYG+ODgIB8eHubxeJyPjIzwRCLBR0dH+djYGE8mk3x8fJxPTEzwqakpPj09zWdmZvjs7Cyfm5vj8/PzfGFhgS8uLvKlpSW+vLzMV1ZW+OrqKl9bW+Pr6+t8Y2ODb25u8q2tLb69vc13dnb47u4u39vb4/v7+/zg4IAfHh7yo6MjfnJywk9PT/nZ2Rk/Pz/nFxcX/PLykl9dXfHr62t+c3PDb29v+d3dHb+/v+cPDw/88fGRPz098efnZ/7y8sJfX1/529sbf39/5x8fH/zz85N/fX3x7+9vXq1WOTz4EWAAd3M5dAF9K7QAAAAASUVORK5CYII=';
+        
+        // Sprite animation variables
+        const SPRITE_WIDTH = 32;
+        const SPRITE_HEIGHT = 24;
+        const SPRITE_FRAMES = 4;
+        let currentFrame = 0;
+        let frameCounter = 0;
+        const FRAME_DELAY = 5;
+        
         // Game state
         let score = 0;
         let coins = parseInt(localStorage.getItem('coins')) || 0;
@@ -291,11 +303,21 @@
             ctx.fillStyle = '#90EE90';
             ctx.fillRect(0, groundY + 40, canvas.width, canvas.height - groundY - 40);
             
-            // Draw player
-            ctx.fillStyle = '#8B4513';
-            ctx.beginPath();
-            ctx.arc(canvas.width / 2, playerY, 20, 0, Math.PI * 2);
-            ctx.fill();
+            // Draw player (animated dog)
+            frameCounter++;
+            if (frameCounter >= FRAME_DELAY) {
+                currentFrame = (currentFrame + 1) % SPRITE_FRAMES;
+                frameCounter = 0;
+            }
+            
+            // Draw the current frame of the dog sprite
+            ctx.drawImage(
+                dogSprite,
+                currentFrame * SPRITE_WIDTH, 0,
+                SPRITE_WIDTH, SPRITE_HEIGHT,
+                canvas.width / 2 - SPRITE_WIDTH, playerY - SPRITE_HEIGHT / 2,
+                SPRITE_WIDTH, SPRITE_HEIGHT
+            );
             
             // Draw sneakers
             ctx.fillStyle = '#FFFFFF';
