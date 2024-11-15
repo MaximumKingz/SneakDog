@@ -92,12 +92,12 @@ class SneakDog {
         document.getElementById('menuButton').addEventListener('click', () => {
             if (this.gameState === 'playing') {
                 this.gameState = 'paused';
+                showMenu();
             }
-            document.getElementById('upgradeMenu').classList.remove('hidden');
         });
 
         document.getElementById('closeMenu').addEventListener('click', () => {
-            document.getElementById('upgradeMenu').classList.add('hidden');
+            hideMenu();
             if (this.gameState === 'paused') {
                 this.gameState = 'playing';
             }
@@ -181,6 +181,8 @@ class SneakDog {
     }
     
     startGame() {
+        hideGameOver();
+        hideMenu();
         this.gameState = 'playing';
         this.score = 0;
         this.obstacles = [];
@@ -319,6 +321,7 @@ class SneakDog {
             localStorage.setItem('highScore', this.highScore);
             document.getElementById('highScore').textContent = this.highScore;
         }
+        showGameOver(this.score);
     }
     
     draw() {
@@ -388,6 +391,24 @@ class SneakDog {
         
         requestAnimationFrame(this.gameLoop.bind(this));
     }
+}
+
+function showMenu() {
+    document.getElementById('upgradeMenu').classList.add('visible');
+}
+
+function hideMenu() {
+    document.getElementById('upgradeMenu').classList.remove('visible');
+}
+
+function showGameOver(score) {
+    const gameMessage = document.getElementById('gameMessage');
+    document.getElementById('finalScore').textContent = score;
+    gameMessage.classList.remove('hidden');
+}
+
+function hideGameOver() {
+    document.getElementById('gameMessage').classList.add('hidden');
 }
 
 // Initialize game when document is ready
