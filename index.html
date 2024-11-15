@@ -3,44 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sneak Dog</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>SneakDog Game</title>
+    <script src="https://telegram.org/js/games.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-        
-        :root {
-            --primary-color: var(--tg-theme-button-color, #2481cc);
-            --text-color: var(--tg-theme-text-color, #ffffff);
-            --bg-color: var(--tg-theme-bg-color, #1a1a1a);
-            --secondary-bg: var(--tg-theme-secondary-bg-color, #2a2a2a);
-            --hint-color: var(--tg-theme-hint-color, #999999);
-            --menu-overlay: rgba(0, 0, 0, 0.95);
-            --card-bg: rgba(255, 255, 255, 0.1);
-            --success-color: #4CAF50;
-            --danger-color: #f44336;
-        }
-        
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            position: fixed;
             touch-action: none;
-            background-color: var(--bg-color);
-            color: var(--text-color);
         }
         
-        #gameContainer {
-            width: 100%;
-            height: 100%;
-            position: relative;
+        body {
+            background: #000;
+            font-family: 'Press Start 2P', cursive;
             overflow: hidden;
+            color: white;
         }
         
         #gameCanvas {
@@ -48,723 +27,276 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            max-width: 100%;
-            max-height: 100%;
-            touch-action: none;
+            image-rendering: pixelated;
         }
-
-        /* Top Bar */
-        .top-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 15px 20px;
-            background: linear-gradient(to bottom, var(--menu-overlay), transparent);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 50;
-        }
-
-        .stats-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .stat {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--card-bg);
-            padding: 8px 15px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            min-width: 80px;
-            justify-content: center;
-        }
-
-        .stat-icon {
+        
+        #score {
+            position: fixed;
+            top: 20px;
+            left: 20px;
             font-size: 16px;
+            z-index: 100;
+            text-shadow: 2px 2px #000;
         }
-
-        .stat-value {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-color);
-        }
-
-        /* Menu Button */
-        .menu-button {
-            background: var(--primary-color);
-            color: var(--text-color);
-            border: none;
-            border-radius: 12px;
-            padding: 8px 20px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            transition: all 0.2s ease;
-        }
-
-        .menu-button:active {
-            transform: scale(0.95);
-        }
-
-        .menu-button-icon {
-            font-size: 20px;
-        }
-
-        /* Upgrade Menu */
-        .menu {
+        
+        #startScreen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--menu-overlay);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             flex-direction: column;
-            z-index: 100;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .menu.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .menu-header {
-            padding: 20px;
-            background: var(--secondary-bg);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .menu-title {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--text-color);
-        }
-
-        .menu-close {
-            background: transparent;
-            border: none;
-            color: var(--text-color);
-            font-size: 24px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background-color 0.2s ease;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
             justify-content: center;
-        }
-
-        .menu-close:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .menu-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-width: 600px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .upgrade-card {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            transition: transform 0.2s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
         }
-
-        .upgrade-card:hover {
-            transform: translateY(-2px);
-        }
-
-        .upgrade-info {
-            flex: 1;
-            margin-right: 20px;
-        }
-
-        .upgrade-name {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--text-color);
-        }
-
-        .upgrade-description {
-            font-size: 14px;
-            color: var(--hint-color);
-            margin-bottom: 8px;
-        }
-
-        .upgrade-level {
-            font-size: 12px;
-            color: var(--primary-color);
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .level-bar {
-            flex: 1;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            max-width: 100px;
-            overflow: hidden;
-        }
-
-        .level-progress {
-            height: 100%;
-            background: var(--primary-color);
-            border-radius: 2px;
-            transition: width 0.3s ease;
-        }
-
-        .upgrade-button {
-            background: var(--primary-color);
-            color: var(--text-color);
+        
+        .button {
+            padding: 15px 30px;
+            font-size: 16px;
+            background: #4a4a4a;
+            color: white;
             border: none;
-            border-radius: 10px;
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 600;
+            font-family: 'Press Start 2P', cursive;
             cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            margin: 10px;
+            text-transform: uppercase;
         }
-
-        .upgrade-button:not(:disabled):hover {
-            background: var(--success-color);
-            transform: translateY(-1px);
-        }
-
-        .upgrade-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background: var(--hint-color);
-        }
-
-        /* Game Messages */
-        .game-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: var(--text-color);
-            background: var(--menu-overlay);
-            padding: 30px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            z-index: 40;
-        }
-
-        .game-message h2 {
-            font-size: 36px;
+        
+        h1 {
+            font-size: 32px;
             margin-bottom: 20px;
-            color: var(--primary-color);
+            color: #fff;
         }
-
-        .game-message p {
-            font-size: 24px;
-            color: var(--text-color);
+        
+        p {
+            font-size: 14px;
             margin-bottom: 20px;
-        }
-
-        .game-message .tap-to-play {
-            color: var(--hint-color);
-            font-size: 18px;
-            animation: pulse 2s infinite;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* Animations */
-        @keyframes pulse {
-            0% { opacity: 0.6; }
-            50% { opacity: 1; }
-            100% { opacity: 0.6; }
-        }
-
-        /* Mobile Optimization */
-        @media (max-width: 480px) {
-            .top-bar {
-                padding: 10px 15px;
-            }
-
-            .stat {
-                padding: 6px 12px;
-                min-width: 70px;
-            }
-
-            .stat-icon {
-                font-size: 14px;
-            }
-
-            .stat-value {
-                font-size: 14px;
-            }
-
-            .menu-button {
-                padding: 6px 15px;
-                font-size: 14px;
-            }
-
-            .upgrade-card {
-                padding: 15px;
-            }
-
-            .upgrade-name {
-                font-size: 16px;
-            }
-
-            .upgrade-description {
-                font-size: 12px;
-            }
-
-            .upgrade-button {
-                padding: 8px 15px;
-                font-size: 12px;
-            }
-
-            .game-message {
-                padding: 20px;
-            }
-
-            .game-message h2 {
-                font-size: 28px;
-            }
-
-            .game-message p {
-                font-size: 18px;
-            }
-        }
-
-        /* Dog Character */
-        .dog {
-            position: absolute;
-            width: 100px;
-            height: 80px;
-            pointer-events: none;
-            transform-origin: center;
-            z-index: 10;
-        }
-
-        .dog-body {
-            position: absolute;
-            width: 70px;
-            height: 40px;
-            background: linear-gradient(45deg, #6B4423, #8B5E3C);
-            border-radius: 20px;
-            bottom: 0;
-            left: 15px;
-            box-shadow: 
-                inset -5px -5px 15px rgba(0,0,0,0.3),
-                inset 5px 5px 15px rgba(255,255,255,0.2);
-        }
-
-        .dog-head {
-            position: absolute;
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(45deg, #6B4423, #8B5E3C);
-            border-radius: 22px;
-            bottom: 20px;
-            left: 50px;
-            transform-origin: center;
-            box-shadow: 
-                inset -5px -5px 15px rgba(0,0,0,0.3),
-                inset 5px 5px 15px rgba(255,255,255,0.2);
-            animation: headBob 0.6s infinite alternate ease-in-out;
-        }
-
-        .dog-ear-left, .dog-ear-right {
-            position: absolute;
-            width: 25px;
-            height: 30px;
-            background: linear-gradient(45deg, #5A381D, #6B4423);
-            border-radius: 12px;
-            transform-origin: bottom center;
-            box-shadow: 
-                inset -2px -2px 6px rgba(0,0,0,0.3),
-                inset 2px 2px 6px rgba(255,255,255,0.2);
-        }
-
-        .dog-ear-left {
-            left: -8px;
-            top: -15px;
-            transform: rotate(-30deg);
-            animation: earLeft 0.6s infinite alternate ease-in-out;
-        }
-
-        .dog-ear-right {
-            right: -8px;
-            top: -15px;
-            transform: rotate(30deg);
-            animation: earRight 0.6s infinite alternate ease-in-out;
-        }
-
-        .dog-eye {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #000;
-            border-radius: 50%;
-            top: 15px;
-            right: 10px;
-            box-shadow: 0 0 5px rgba(0,0,0,0.5);
-        }
-
-        .dog-eye::after {
-            content: '';
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #fff;
-            border-radius: 50%;
-            top: 2px;
-            right: 2px;
-        }
-
-        .dog-nose {
-            position: absolute;
-            width: 14px;
-            height: 10px;
-            background: #1a1a1a;
-            border-radius: 7px;
-            top: 22px;
-            right: 3px;
-            box-shadow: 
-                inset -2px -2px 4px rgba(0,0,0,0.5),
-                inset 2px 2px 4px rgba(255,255,255,0.2);
-        }
-
-        .dog-tail {
-            position: absolute;
-            width: 30px;
-            height: 12px;
-            background: linear-gradient(45deg, #5A381D, #6B4423);
-            border-radius: 6px;
-            bottom: 20px;
-            left: 0;
-            transform-origin: left center;
-            box-shadow: 
-                inset -2px -2px 6px rgba(0,0,0,0.3),
-                inset 2px 2px 6px rgba(255,255,255,0.2);
-            animation: tailWag 0.3s infinite alternate ease-in-out;
-        }
-
-        .dog-leg {
-            position: absolute;
-            width: 12px;
-            height: 20px;
-            background: linear-gradient(45deg, #5A381D, #6B4423);
-            border-radius: 6px;
-            bottom: -18px;
-            box-shadow: 
-                inset -2px -2px 6px rgba(0,0,0,0.3),
-                inset 2px 2px 6px rgba(255,255,255,0.2);
-        }
-
-        .leg-front {
-            left: 20px;
-            animation: legFront 0.3s infinite alternate ease-in-out;
-        }
-
-        .leg-back {
-            right: 20px;
-            animation: legBack 0.3s infinite alternate ease-in-out;
-        }
-
-        /* Dog Animations */
-        @keyframes headBob {
-            0% { transform: translateY(0) rotate(-2deg); }
-            100% { transform: translateY(-3px) rotate(2deg); }
-        }
-
-        @keyframes earLeft {
-            0% { transform: rotate(-30deg) translateY(0); }
-            100% { transform: rotate(-25deg) translateY(-2px); }
-        }
-
-        @keyframes earRight {
-            0% { transform: rotate(30deg) translateY(0); }
-            100% { transform: rotate(25deg) translateY(-2px); }
-        }
-
-        @keyframes tailWag {
-            0% { transform: rotate(-15deg); }
-            100% { transform: rotate(15deg); }
-        }
-
-        @keyframes legFront {
-            0% { transform: translateY(0) rotate(-5deg); }
-            100% { transform: translateY(-3px) rotate(5deg); }
-        }
-
-        @keyframes legBack {
-            0% { transform: translateY(-3px) rotate(5deg); }
-            100% { transform: translateY(0) rotate(-5deg); }
-        }
-
-        .dog.jumping {
-            animation: jump 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes jump {
-            0% { 
-                transform: translateY(0) rotate(0deg) scale(1);
-            }
-            50% { 
-                transform: translateY(-120px) rotate(8deg) scale(0.95);
-            }
-            100% { 
-                transform: translateY(0) rotate(0deg) scale(1);
-            }
-        }
-
-        .dog.running .dog-body {
-            animation: bodyRun 0.3s infinite alternate ease-in-out;
-        }
-
-        @keyframes bodyRun {
-            0% { 
-                transform: translateY(0) scaleY(1) rotate(-2deg);
-            }
-            100% { 
-                transform: translateY(-2px) scaleY(0.95) rotate(2deg);
-            }
-        }
-
-        /* Add fur texture */
-        .dog-body::after,
-        .dog-head::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.15"/></svg>');
-            border-radius: inherit;
-            pointer-events: none;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <canvas id="gameCanvas"></canvas>
-        
-        <!-- Top Bar -->
-        <div class="top-bar">
-            <div class="stats-group">
-                <div class="stat">
-                    <span class="stat-icon">🏃</span>
-                    <span class="stat-value" id="score">0</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-icon">🪙</span>
-                    <span class="stat-value" id="coins">0</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-icon">🏆</span>
-                    <span class="stat-value" id="highScore">0</span>
-                </div>
-            </div>
-            <button class="menu-button" id="menuButton">
-                <span class="menu-button-text">Upgrades</span>
-                <span class="menu-button-icon">⚙️</span>
-            </button>
-        </div>
-
-        <!-- Upgrade Menu -->
-        <div id="upgradeMenu" class="menu">
-            <div class="menu-header">
-                <h1 class="menu-title">Upgrades</h1>
-                <button class="menu-close" id="closeMenu">×</button>
-            </div>
-            <div class="menu-content">
-                <div class="upgrade-card">
-                    <div class="upgrade-info">
-                        <div class="upgrade-name">Jump Power</div>
-                        <div class="upgrade-description">Jump higher to avoid obstacles more easily</div>
-                        <div class="upgrade-level">
-                            Level <span id="jumpLevel">1</span>/5
-                            <div class="level-bar">
-                                <div class="level-progress" style="width: 20%"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="upgrade-button" id="jumpUpgrade">
-                        <span>Upgrade</span>
-                        <span>50 🪙</span>
-                    </button>
-                </div>
-                
-                <div class="upgrade-card">
-                    <div class="upgrade-info">
-                        <div class="upgrade-name">Double Jump</div>
-                        <div class="upgrade-description">Jump again while in the air</div>
-                        <div class="upgrade-level">
-                            Level <span id="doubleJumpLevel">0</span>/1
-                            <div class="level-bar">
-                                <div class="level-progress" style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="upgrade-button" id="doubleJumpUpgrade">
-                        <span>Unlock</span>
-                        <span>100 🪙</span>
-                    </button>
-                </div>
-                
-                <div class="upgrade-card">
-                    <div class="upgrade-info">
-                        <div class="upgrade-name">Coin Magnet</div>
-                        <div class="upgrade-description">Attract coins from further away</div>
-                        <div class="upgrade-level">
-                            Level <span id="magnetLevel">0</span>/3
-                            <div class="level-bar">
-                                <div class="level-progress" style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="upgrade-button" id="magnetUpgrade">
-                        <span>Unlock</span>
-                        <span>150 🪙</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Game Messages -->
-        <div id="gameMessage" class="game-message hidden">
-            <h2>Game Over!</h2>
-            <p>Score: <span id="finalScore">0</span></p>
-            <p class="tap-to-play">Tap to Play Again</p>
-        </div>
+    <div id="score">SCORE: 0 TIME: 30s</div>
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="startScreen">
+        <h1>SNEAKDOG</h1>
+        <p>CATCH THE DOG!<br>TIME: 30 SEC</p>
+        <button onclick="startGame()" class="button">START GAME</button>
     </div>
-    <script src="static/js/game.js"></script>
+
     <script>
-        // Initialize Telegram WebApp
-        const webapp = window.Telegram.WebApp;
-        webapp.ready();
-        webapp.expand();
-
-        // Game elements
-        const dog = document.getElementById('dog');
-        const gameArea = document.getElementById('game-area');
-        const scoreElement = document.getElementById('score-value');
-        const bestScoreElement = document.getElementById('best-score');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score');
+        const startScreen = document.getElementById('startScreen');
         
-        // Game state
+        // Game variables
         let score = 0;
-        let bestScore = localStorage.getItem('bestScore') || 0;
-        bestScoreElement.textContent = bestScore;
+        let gameRunning = false;
+        let timeLeft = 30;
+        let lastUpdateTime = 0;
+        
+        // Dog variables
+        let dogX = 0;
+        let dogY = 0;
+        let dogSpeed = 2;
+        let dogDirection = Math.random() * Math.PI * 2;
+        let dogFrame = 0;
+        let frameCount = 0;
+        let changeDirectionCooldown = 0;
+        
+        // Create dog sprite
+        const dogSprite = new Image();
+        dogSprite.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAGKSURBVFiF7ZY9TsNAEIXfbCANokGiQhyAE9BwCxokTkDFAWg4AAeg4QR0VFAhTkDDAag4ACUVEpWrjWcpxF5vMOsfJSNZ8u7O7Js3O7YJznAGAFwCeAOwB7ADsAbQPXU8LYQvAHxbWJ06rqbEBwCLhPgPgKdTx9eEfA/AW0b8COB+jrwF4GEEQQ/AzVzyEcI7AHsAQwVHM4J8CGCTIW4DuEopvZ0q3kxBPgTwmVB6BHCv9HwB2OTyNVW8TZC3AHwp5HsAlwb/1wB+Mv6rseKtEPkIwIci/gPgVvGtAPgw+O6mFG8o5FcA3pXkLQBPCXICwE7xr4wl3zDkC0X8F8BDxn8FYGn4X48h31DI7wC8JMhfAVxk/O8BLBX/1VDyjUJ+DeCpQD4AcJPxXwJYGP7rIeQbhbwD4FkRPwK4z/gvACwM3/UQ8k2GvA3gSyHfAbhOkBMAdob/pi75WiGvAPgo5HsAl4a/+fFN+q9ryNcKeQfAF4A/AH8Iy3GZ8f8HpNOCZrYNKYYAAAAASUVORK5CYII=';
 
-        function randomPosition() {
-            const padding = 20;
-            const maxX = gameArea.clientWidth - dog.clientWidth - padding;
-            const maxY = gameArea.clientHeight - dog.clientHeight - padding;
-            const x = Math.max(padding, Math.random() * maxX);
-            const y = Math.max(padding, Math.random() * maxY);
-            dog.style.left = x + 'px';
-            dog.style.top = y + 'px';
+        // Create grass tile
+        const grassTile = new Image();
+        grassTile.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAMFBMVEUAAAA0OkJCSVFTW2JkanF8hY6Pk5ygpKy0ucHM0NjY3ODk6PDs8PT4/P//////AP//bI0XAAAAAXRSTlMAQObYZgAAAJhJREFUKM9jYBgFo2AUDDHACAQMDIxAzMjAwARkMzEwMTIBJZjBEoxMTAwMjEA2IxMDAxOQzcDExMDAyAhkMzExMDCCJBgYmRgYGBnBaiDqIBIQ80BsqB6YWogZUDYDE1wvxEyQm6BmMzCB3QR1GBMrAzI/AeSnDKifM6B+Z0APnwyogZMBLXQzoIV+BrTIwYAWeaOAAQCZYU1lN7p7YQAAAABJRU5ErkJggg==';
+
+        // Resize canvas to fit window
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        // Initialize game
+        function init() {
+            resizeCanvas();
+            dogX = canvas.width / 2;
+            dogY = canvas.height / 2;
         }
 
-        function updateScore() {
-            score += 1;
-            scoreElement.textContent = score;
-            scoreElement.classList.add('score-pop');
-            setTimeout(() => scoreElement.classList.remove('score-pop'), 300);
-
-            if (score > bestScore) {
-                bestScore = score;
-                bestScoreElement.textContent = bestScore;
-                localStorage.setItem('bestScore', bestScore);
+        // Update dog position
+        function updateDog(deltaTime) {
+            // Update direction change cooldown
+            if (changeDirectionCooldown > 0) {
+                changeDirectionCooldown -= deltaTime;
             }
-
-            // Haptic feedback
-            webapp.HapticFeedback.impactOccurred('medium');
+            
+            // Randomly change direction (10% chance per second)
+            if (changeDirectionCooldown <= 0 && Math.random() < 0.1 * (deltaTime / 1000)) {
+                // Change direction by up to 45 degrees
+                dogDirection += (Math.random() - 0.5) * Math.PI / 2;
+                changeDirectionCooldown = 500; // 0.5 second cooldown
+            }
+            
+            // Move dog
+            const speed = dogSpeed * (1 + score/50); // Gradually increase speed with score
+            dogX += Math.cos(dogDirection) * speed;
+            dogY += Math.sin(dogDirection) * speed;
+            
+            // Bounce off walls
+            const padding = 32;
+            if (dogX < padding) {
+                dogX = padding;
+                dogDirection = Math.PI - dogDirection;
+            } else if (dogX > canvas.width - padding) {
+                dogX = canvas.width - padding;
+                dogDirection = Math.PI - dogDirection;
+            }
+            
+            if (dogY < padding) {
+                dogY = padding;
+                dogDirection = -dogDirection;
+            } else if (dogY > canvas.height - padding) {
+                dogY = canvas.height - padding;
+                dogDirection = -dogDirection;
+            }
+            
+            // Animate dog sprite
+            frameCount++;
+            if (frameCount % 6 === 0) {
+                dogFrame = (dogFrame + 1) % 4;
+            }
         }
 
-        function shareScore() {
-            webapp.switchInlineQuery(
-                `🐕 I caught the sneaky dog ${score} times in SneakDog! Can you beat my score?`,
-                ['sneakdog']
+        // Draw game
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grass background
+            const tileSize = 32;
+            for (let y = 0; y < canvas.height; y += tileSize) {
+                for (let x = 0; x < canvas.width; x += tileSize) {
+                    ctx.drawImage(grassTile, x, y, tileSize, tileSize);
+                }
+            }
+            
+            // Draw dog
+            ctx.save();
+            ctx.translate(dogX, dogY);
+            if (Math.cos(dogDirection) < 0) ctx.scale(-1, 1);
+            ctx.drawImage(
+                dogSprite,
+                dogFrame * 32, 0, 32, 32,
+                -16, -16, 32, 32
             );
+            ctx.restore();
         }
 
-        function resetGame() {
+        // Game loop
+        function gameLoop(timestamp) {
+            if (!gameRunning) return;
+            
+            const deltaTime = timestamp - lastUpdateTime;
+            lastUpdateTime = timestamp;
+            
+            // Update time
+            timeLeft = Math.max(0, timeLeft - deltaTime / 1000);
+            scoreDisplay.textContent = `SCORE: ${score} TIME: ${Math.ceil(timeLeft)}s`;
+            
+            // Check game over
+            if (timeLeft <= 0) {
+                gameRunning = false;
+                startScreen.style.display = 'flex';
+                startScreen.querySelector('h1').textContent = 'GAME OVER!';
+                startScreen.querySelector('p').textContent = `FINAL SCORE: ${score}`;
+                startScreen.querySelector('button').textContent = 'PLAY AGAIN';
+                if (TelegramGameProxy) {
+                    TelegramGameProxy.setScore(score);
+                }
+                return;
+            }
+            
+            updateDog(deltaTime);
+            draw();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Handle clicks/touches
+        function handleClick(event) {
+            if (!gameRunning) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const clickY = event.clientY - rect.top;
+            
+            // Check if dog was caught
+            const dx = clickX - dogX;
+            const dy = clickY - dogY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 24) { // Slightly larger hitbox for better playability
+                // Add score based on current speed
+                const speedBonus = Math.floor(dogSpeed * (1 + score/50));
+                score += 10 + speedBonus;
+                
+                // Add time bonus
+                timeLeft = Math.min(30, timeLeft + 1);
+                
+                // Increase difficulty
+                dogSpeed += 0.1;
+                
+                // Update score display
+                scoreDisplay.textContent = `SCORE: ${score} TIME: ${Math.ceil(timeLeft)}s`;
+                
+                // Change direction
+                dogDirection = Math.random() * Math.PI * 2;
+                
+                // Update Telegram score
+                if (TelegramGameProxy) {
+                    TelegramGameProxy.setScore(score);
+                }
+            }
+        }
+
+        // Start game
+        function startGame() {
             score = 0;
-            scoreElement.textContent = score;
-            randomPosition();
-            webapp.HapticFeedback.notificationOccurred('success');
+            timeLeft = 30;
+            dogSpeed = 2;
+            dogDirection = Math.random() * Math.PI * 2;
+            frameCount = 0;
+            dogFrame = 0;
+            changeDirectionCooldown = 0;
+            
+            startScreen.style.display = 'none';
+            gameRunning = true;
+            lastUpdateTime = performance.now();
+            gameLoop(lastUpdateTime);
         }
 
-        // Handle both click and touch events
-        function handleTap() {
-            updateScore();
-            randomPosition();
-        }
-
-        dog.addEventListener('click', handleTap);
-        dog.addEventListener('touchstart', (e) => {
+        // Event listeners
+        window.addEventListener('resize', resizeCanvas);
+        canvas.addEventListener('click', handleClick);
+        canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            handleTap();
+            handleClick(e.touches[0]);
         });
 
-        // Prevent scrolling on touch
-        document.body.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-        }, { passive: false });
-
-        // Initial setup
-        randomPosition();
-
-        // Set Telegram theme colors
-        webapp.setHeaderColor(webapp.themeParams.secondary_bg_color || '#f0f0f0');
-        webapp.setBackgroundColor(webapp.themeParams.bg_color || '#fff');
-
-        // Main Button setup
-        webapp.MainButton.setParams({
-            text: 'SHARE SCORE',
-            is_visible: true
-        }).onClick(shareScore);
+        // Initialize game when images are loaded
+        Promise.all([
+            new Promise(resolve => dogSprite.onload = resolve),
+            new Promise(resolve => grassTile.onload = resolve)
+        ]).then(() => {
+            init();
+            draw();
+        });
     </script>
 </body>
 </html>
