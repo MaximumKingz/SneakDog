@@ -77,6 +77,10 @@
         canvas.width = 800;
         canvas.height = 400;
         
+        // Create dog sprite
+        const dogSprite = new Image();
+        dogSprite.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAgBAMAAAA79TKYAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAtUExURQAAAP///4SEhMzMzKqqqrGxsZmZmXV1dWZmZlVVVURERDMzMyIiIhEREQAAAHkUO+kAAAABdFJOUwBA5thmAAAAxklEQVRIx+3VMQ6CQBAF0GEDiY2FsTDxAMbEeAAPYGFhYWHhATyAhYWFhfECHsDCwsLCeAALC2NhYWwMCSZL5iBWW1gQE7+i+PNn5v+ZBcZYgQIFChQocLgKcHa/z+7/AwBwJwBAUkqS9wAASZKU0gEASJLMOQMAkCRTSh0AgCTJGDMAAEmSOecBAEiSKaUOAECS5JxzAACSpLX2AAAkSWvtAQBIktbaAwCQJI0xAwCQJHPOHQCAJJlS6gAAJEnOOQcAIEnGmAEA+Jx3LVjD7MsZXFUAAAAASUVORK5CYII=';
+
         // Game state
         let score = 0;
         let gameRunning = false;
@@ -171,16 +175,7 @@
             ctx.fillRect(0, groundY + 40, canvas.width, canvas.height - groundY - 40);
             
             // Draw player (brown dog)
-            ctx.fillStyle = '#8B4513';
-            ctx.beginPath();
-            ctx.arc(playerX, playerY - 15, 15, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillRect(playerX - 15, playerY - 15, 30, 15);
-            
-            // Draw legs
-            const legOffset = Math.sin(Date.now() / 100) * 5;
-            ctx.fillRect(playerX - 10, playerY, 5, 10 + legOffset);
-            ctx.fillRect(playerX + 5, playerY, 5, 10 - legOffset);
+            ctx.drawImage(dogSprite, playerX, playerY - 15);
             
             // Draw sneakers
             ctx.fillStyle = '#FFFFFF';
