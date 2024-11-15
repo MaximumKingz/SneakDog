@@ -6,21 +6,12 @@
     <title>SneakDog</title>
     <script src="https://telegram.org/js/games.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-        
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            image-rendering: pixelated;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        
-        body {
             background: #000;
             overflow: hidden;
-            font-family: 'Press Start 2P', cursive;
+            font-family: Arial, sans-serif;
         }
         
         #gameCanvas {
@@ -29,90 +20,52 @@
             left: 50%;
             transform: translate(-50%, -50%);
             border: 4px solid #4CAF50;
-            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
         }
         
-        .hud-item {
+        .hud {
             position: fixed;
             color: white;
-            font-size: 14px;
-            text-shadow: 2px 2px #000;
-            z-index: 100;
-            padding: 10px 20px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid #4CAF50;
-            border-radius: 4px;
+            font-size: 20px;
+            padding: 10px;
+            text-shadow: 2px 2px black;
         }
         
-        #score { top: 20px; left: 20px; }
-        #time { top: 20px; right: 20px; }
+        #score { top: 10px; left: 10px; }
+        #time { top: 10px; right: 10px; }
         
-        .screen {
+        #startScreen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             color: white;
-            z-index: 1000;
-            padding: 20px;
-        }
-        
-        .title {
-            font-size: 32px;
-            color: #4CAF50;
-            text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
-        
-        .subtitle {
-            font-size: 14px;
-            color: #fff;
-            margin-bottom: 30px;
-            text-align: center;
-            line-height: 1.5;
         }
         
         .button {
             padding: 15px 30px;
-            font-size: 16px;
+            font-size: 20px;
             background: #4CAF50;
             color: white;
             border: none;
-            font-family: 'Press Start 2P', cursive;
+            border-radius: 5px;
             cursor: pointer;
             margin: 10px;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            border-radius: 4px;
-            box-shadow: 0 4px #388E3C;
-        }
-        
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px #388E3C;
-        }
-        
-        .button:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px #388E3C;
         }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
-    <div id="score" class="hud-item">SCORE: 0</div>
-    <div id="time" class="hud-item">TIME: 30s</div>
-    
-    <div id="startScreen" class="screen">
-        <h1 class="title">SneakDog</h1>
-        <p class="subtitle">CATCH THE SNEAKERS!<br>PRESS SPACE OR TAP TO JUMP</p>
+    <div id="score" class="hud">SCORE: 0</div>
+    <div id="time" class="hud">TIME: 30s</div>
+    <div id="startScreen">
+        <h1>SneakDog</h1>
+        <p>CATCH THE SNEAKERS!<br>PRESS SPACE OR TAP TO JUMP</p>
         <button onclick="startGame()" class="button">START GAME</button>
     </div>
 
@@ -123,23 +76,6 @@
         // Set canvas size
         canvas.width = 800;
         canvas.height = 400;
-        
-        // Load dog sprite
-        const dogSprite = new Image();
-        dogSprite.src = 'https://maximumkingz.github.io/SneakDog/dog.png';
-        
-        // Make sure dog sprite is loaded before starting
-        dogSprite.onload = function() {
-            console.log("Dog sprite loaded successfully");
-            // Start game only after sprite is loaded
-            document.getElementById('startScreen').style.display = 'flex';
-        };
-        
-        dogSprite.onerror = function() {
-            console.error("Failed to load dog sprite");
-            // Show error message
-            alert("Failed to load game graphics. Please try refreshing the page.");
-        };
         
         // Game state
         let score = 0;
@@ -157,17 +93,8 @@
         const JUMP_FORCE = -15;
         const PLAYER_SPEED = 5;
         
-        // Sprite animation
-        const SPRITE_WIDTH = 32;
-        const SPRITE_HEIGHT = 32;
-        const SPRITE_FRAMES = 4;
-        let currentFrame = 0;
-        let frameCounter = 0;
-        const FRAME_DELAY = 5;
-        
         // Sneakers array
         let sneakers = [];
-        const SNEAKER_SPEED = 5;
         
         function update(timestamp) {
             if (!gameRunning) return;
@@ -211,7 +138,7 @@
             
             for (let i = sneakers.length - 1; i >= 0; i--) {
                 const sneaker = sneakers[i];
-                sneaker.x -= SNEAKER_SPEED;
+                sneaker.x -= 5;
                 
                 // Check collision
                 const dx = sneaker.x - playerX;
@@ -230,10 +157,7 @@
                 }
             }
             
-            // Draw game
             draw();
-            
-            // Next frame
             requestAnimationFrame(update);
         }
         
@@ -246,20 +170,17 @@
             ctx.fillStyle = '#90EE90';
             ctx.fillRect(0, groundY + 40, canvas.width, canvas.height - groundY - 40);
             
-            // Draw player (animated dog)
-            frameCounter++;
-            if (frameCounter >= FRAME_DELAY) {
-                currentFrame = (currentFrame + 1) % SPRITE_FRAMES;
-                frameCounter = 0;
-            }
+            // Draw player (brown dog)
+            ctx.fillStyle = '#8B4513';
+            ctx.beginPath();
+            ctx.arc(playerX, playerY - 15, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillRect(playerX - 15, playerY - 15, 30, 15);
             
-            ctx.drawImage(
-                dogSprite,
-                currentFrame * SPRITE_WIDTH, 0,
-                SPRITE_WIDTH, SPRITE_HEIGHT,
-                playerX - SPRITE_WIDTH, playerY - SPRITE_HEIGHT,
-                SPRITE_WIDTH * 2, SPRITE_HEIGHT * 2
-            );
+            // Draw legs
+            const legOffset = Math.sin(Date.now() / 100) * 5;
+            ctx.fillRect(playerX - 10, playerY, 5, 10 + legOffset);
+            ctx.fillRect(playerX + 5, playerY, 5, 10 - legOffset);
             
             // Draw sneakers
             ctx.fillStyle = '#FFFFFF';
