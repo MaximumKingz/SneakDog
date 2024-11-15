@@ -22,12 +22,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Bot Configuration
-TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
-if not TOKEN:
-    logger.error("No bot token found in environment variables!")
-    sys.exit(1)
-
-WEBAPP_URL = "https://maximumkingz.github.io/SneakDog/game.html"
+TOKEN = "7719239069:AAGfskyBni2VejQMAxv_nX0BKZIxrkpcjPc"
+WEBAPP_URL = "https://maximumkingz.github.io/SneakDog/"  # Point to index.html
 
 def signal_handler(signum, frame):
     """Handle shutdown signals gracefully"""
