@@ -90,26 +90,59 @@ class SneakDog {
         });
 
         // Menu controls
-        document.getElementById('menuButton').addEventListener('click', () => {
+        const menuButton = document.getElementById('menuButton');
+        const closeButton = document.getElementById('closeMenu');
+        const upgradeMenu = document.getElementById('upgradeMenu');
+
+        menuButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent canvas click
             if (this.gameState === 'playing') {
                 this.gameState = 'paused';
             }
-            showMenu();
+            upgradeMenu.classList.add('visible');
         });
 
-        document.getElementById('closeMenu').addEventListener('click', () => {
-            hideMenu();
+        closeButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent canvas click
+            upgradeMenu.classList.remove('visible');
             if (this.gameState === 'paused') {
                 this.gameState = 'playing';
             }
         });
 
+        // Prevent canvas clicks when clicking menu
+        upgradeMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
         // Upgrade buttons
-        document.getElementById('jumpUpgrade').addEventListener('click', () => this.purchaseUpgrade('jump'));
-        document.getElementById('doubleJumpUpgrade').addEventListener('click', () => this.purchaseUpgrade('doubleJump'));
-        document.getElementById('magnetUpgrade').addEventListener('click', () => this.purchaseUpgrade('magnet'));
+        document.getElementById('jumpUpgrade').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.purchaseUpgrade('jump');
+        });
+        
+        document.getElementById('doubleJumpUpgrade').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.purchaseUpgrade('doubleJump');
+        });
+        
+        document.getElementById('magnetUpgrade').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.purchaseUpgrade('magnet');
+        });
     }
     
+    updateAllProgressBars() {
+        Object.keys(this.upgrades).forEach(type => {
+            const upgrade = this.upgrades[type];
+            const progress = (upgrade.level / upgrade.maxLevel) * 100;
+            const progressBar = document.querySelector(`#${type}Upgrade`).parentElement.querySelector('.level-progress');
+            if (progressBar) {
+                progressBar.style.width = `${progress}%`;
+            }
+        });
+    }
+
     purchaseUpgrade(type) {
         const upgrade = this.upgrades[type];
         if (this.coins >= upgrade.cost && upgrade.level < upgrade.maxLevel) {
@@ -124,7 +157,7 @@ class SneakDog {
             }
             
             this.updateUpgradeDisplay();
-            updateLevelProgress(type);
+            this.updateAllProgressBars();
         }
     }
     
@@ -146,12 +179,6 @@ class SneakDog {
         jumpButton.disabled = this.coins < this.upgrades.jump.cost || this.upgrades.jump.level >= this.upgrades.jump.maxLevel;
         doubleJumpButton.disabled = this.coins < this.upgrades.doubleJump.cost || this.upgrades.doubleJump.level >= this.upgrades.doubleJump.maxLevel;
         magnetButton.disabled = this.coins < this.upgrades.magnet.cost || this.upgrades.magnet.level >= this.upgrades.magnet.maxLevel;
-    }
-    
-    updateAllProgressBars() {
-        updateLevelProgress('jump');
-        updateLevelProgress('doubleJump');
-        updateLevelProgress('magnet');
     }
     
     resizeCanvas() {
@@ -190,7 +217,7 @@ class SneakDog {
     
     startGame() {
         document.getElementById('gameMessage').classList.add('hidden');
-        hideMenu();
+        document.getElementById('upgradeMenu').classList.remove('visible');
         this.gameState = 'playing';
         this.score = 0;
         this.obstacles = [];
@@ -399,31 +426,6 @@ class SneakDog {
         
         requestAnimationFrame(this.gameLoop.bind(this));
     }
-}
-
-function showMenu() {
-    document.getElementById('upgradeMenu').classList.add('visible');
-}
-
-function hideMenu() {
-    document.getElementById('upgradeMenu').classList.remove('visible');
-}
-
-function updateLevelProgress(type) {
-    const upgrade = game.upgrades[type];
-    const progress = (upgrade.level / upgrade.maxLevel) * 100;
-    const progressBar = document.querySelector(`#${type}Upgrade`).parentElement.querySelector('.level-progress');
-    progressBar.style.width = `${progress}%`;
-}
-
-function showGameOver(score) {
-    const gameMessage = document.getElementById('gameMessage');
-    document.getElementById('finalScore').textContent = score;
-    gameMessage.classList.remove('hidden');
-}
-
-function hideGameOver() {
-    document.getElementById('gameMessage').classList.add('hidden');
 }
 
 // Initialize game when document is ready
