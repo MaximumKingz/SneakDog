@@ -64,22 +64,6 @@
             padding: 20px;
         }
         
-        .title {
-            font-size: 32px;
-            color: #4CAF50;
-            text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
-        
-        .subtitle {
-            font-size: 14px;
-            color: #fff;
-            margin-bottom: 30px;
-            text-align: center;
-            line-height: 1.5;
-        }
-        
         .button {
             padding: 15px 30px;
             font-size: 16px;
@@ -94,67 +78,6 @@
             border-radius: 4px;
             box-shadow: 0 4px #388E3C;
         }
-        
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px #388E3C;
-        }
-        
-        .button:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px #388E3C;
-        }
-        
-        .button:disabled {
-            background: #666;
-            box-shadow: 0 4px #444;
-            cursor: not-allowed;
-        }
-        
-        .upgrade-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin: 20px;
-            max-width: 600px;
-        }
-        
-        .upgrade-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .upgrade-title {
-            color: #4CAF50;
-            margin-bottom: 10px;
-            font-size: 12px;
-        }
-        
-        .upgrade-desc {
-            color: #aaa;
-            font-size: 10px;
-            margin-bottom: 10px;
-            min-height: 40px;
-        }
-        
-        .upgrade-cost {
-            color: #FFD700;
-            margin-bottom: 10px;
-            font-size: 12px;
-        }
-        
-        .upgrade-level {
-            color: #2196F3;
-            margin-bottom: 10px;
-            font-size: 12px;
-        }
-        
-        #shopScreen .button {
-            font-size: 12px;
-            padding: 10px 20px;
-        }
     </style>
 </head>
 <body>
@@ -166,43 +89,7 @@
     <div id="startScreen" class="screen" style="display: flex;">
         <h1 class="title">SneakDog</h1>
         <p class="subtitle">CATCH THE SNEAKERS!<br>PRESS SPACE OR TAP TO JUMP</p>
-        <button onclick="showShop()" class="button">UPGRADE SHOP</button>
         <button onclick="startGame()" class="button">START GAME</button>
-    </div>
-    
-    <div id="shopScreen" class="screen">
-        <h1 class="title">UPGRADE SHOP</h1>
-        <div class="upgrade-grid">
-            <div class="upgrade-item">
-                <div class="upgrade-title">JUMP POWER</div>
-                <div class="upgrade-desc">Jump higher to catch more sneakers!</div>
-                <div class="upgrade-level">LEVEL: <span id="jumpLevel">0</span>/5</div>
-                <div class="upgrade-cost"><span id="jumpCost">50</span> COINS</div>
-                <button onclick="buyUpgrade('jump')" class="button">UPGRADE</button>
-            </div>
-            <div class="upgrade-item">
-                <div class="upgrade-title">MAGNET RANGE</div>
-                <div class="upgrade-desc">Attract sneakers from further away!</div>
-                <div class="upgrade-level">LEVEL: <span id="magnetLevel">0</span>/5</div>
-                <div class="upgrade-cost"><span id="magnetCost">75</span> COINS</div>
-                <button onclick="buyUpgrade('magnet')" class="button">UPGRADE</button>
-            </div>
-            <div class="upgrade-item">
-                <div class="upgrade-title">COIN BONUS</div>
-                <div class="upgrade-desc">Earn more coins per game!</div>
-                <div class="upgrade-level">LEVEL: <span id="coinLevel">0</span>/5</div>
-                <div class="upgrade-cost"><span id="coinCost">100</span> COINS</div>
-                <button onclick="buyUpgrade('coin')" class="button">UPGRADE</button>
-            </div>
-            <div class="upgrade-item">
-                <div class="upgrade-title">TIME BONUS</div>
-                <div class="upgrade-desc">Start with extra time!</div>
-                <div class="upgrade-level">LEVEL: <span id="timeLevel">0</span>/5</div>
-                <div class="upgrade-cost"><span id="timeCost">150</span> COINS</div>
-                <button onclick="buyUpgrade('time')" class="button">UPGRADE</button>
-            </div>
-        </div>
-        <button onclick="hideShop()" class="button">BACK</button>
     </div>
 
     <script>
@@ -211,10 +98,10 @@
         const ctx = canvas.getContext('2d');
         
         // Set canvas size
-        canvas.width = 320;
-        canvas.height = 480;
+        canvas.width = 800;
+        canvas.height = 400;
         
-        // Load dog sprites
+        // Load dog sprite
         const dogSprite = new Image();
         dogSprite.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAAYCAYAAAAF6fiUAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDYuMC1jMDAyIDc5LjE2NDQ4OCwgMjAyMC8wNy8xMC0yMjowNjo1MyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIDIyLjAgKFdpbmRvd3MpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjY5NjdEOTREMjM1RDExRUU4RjkyOThENzZGNTU5NkJEIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjY5NjdEOTRFMjM1RDExRUU4RjkyOThENzZGNTU5NkJEIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6Njk2N0Q5NEIyMzVEMTFFRThGOTI5OEQ3NkY1NTk2QkQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6Njk2N0Q5NEMyMzVEMTFFRThGOTI5OEQ3NkY1NTk2QkQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5Yj+WxAAAB0klEQVR42uyZQUsCURTH3wyKgkHQwkVtWkQLF0GbwFW0ahO0Ddq1aNG2TdCuRbu2QV8h+gTRJ4i+QBsXLVoUtAiCghYKLQoqAqHe0/+Dh8MwM46OnXlw4c+bN/PevHn/mXvPvFGcc7XRpCgKr2f+qvYvwb+YAGqQAEiAJEACJAESIAmQBEgCJAGSAEmAJEASIAmQBEgCJAGSAEmAJEASIAmQBEgC/iQBVVGUX0vAOI7/GwLK5TLPZrM8n8/zUqnEK5UK7+rq4p2dnby7u5v39vbyWCzGBwYG+ODgIB8eHubxeJyPjIzwRCLBR0dH+djYGE8mk3x8fJxPTEzwqakpPj09zWdmZvjs7Cyfm5vj8/PzfGFhgS8uLvKlpSW+vLzMV1ZW+OrqKl9bW+Pr6+t8Y2ODb25u8q2tLb69vc13dnb47u4u39vb4/v7+/zg4IAfHh7yo6MjfnJywk9PT/nZ2Rk/Pz/nFxcX/PLykl9dXfHr62t+c3PDb29v+d3dHb+/v+cPDw/88fGRPz098efnZ/7y8sJfX1/529sbf39/5x8fH/zz85N/fX3x7+9vXq1WOTz4EWAAd3M5dAF9K7QAAAAASUVORK5CYII=';
         
@@ -228,34 +115,23 @@
         
         // Game state
         let score = 0;
-        let coins = parseInt(localStorage.getItem('coins')) || 0;
         let gameRunning = false;
         let lastTime = 0;
         let timeLeft = 30;
-        let frameCount = 0;
         
         // Player variables
+        let playerX = 100;
         const groundY = canvas.height - 60;
         let playerY = groundY;
         let playerVelY = 0;
         let isJumping = false;
         const GRAVITY = 0.8;
         const JUMP_FORCE = -15;
+        const PLAYER_SPEED = 5;
         
         // Sneaker variables
         let sneakers = [];
         const SNEAKER_SPEED = 3;
-        
-        // Load upgrades from localStorage
-        let upgrades = {
-            jump: parseInt(localStorage.getItem('jumpLevel')) || 0,
-            magnet: parseInt(localStorage.getItem('magnetLevel')) || 0,
-            coin: parseInt(localStorage.getItem('coinLevel')) || 0,
-            time: parseInt(localStorage.getItem('timeLevel')) || 0
-        };
-        
-        // Update UI with current coins
-        document.getElementById('coins').textContent = 'COINS: ' + coins;
         
         // Game loop
         function update(timestamp) {
@@ -272,7 +148,13 @@
             }
             document.getElementById('time').textContent = 'TIME: ' + Math.ceil(timeLeft) + 's';
             
-            // Update player
+            // Move player forward
+            playerX += PLAYER_SPEED;
+            if (playerX > canvas.width + 50) {
+                playerX = -50;
+            }
+            
+            // Update player jump
             if (isJumping) {
                 playerY += playerVelY;
                 playerVelY += GRAVITY;
@@ -315,7 +197,7 @@
                 dogSprite,
                 currentFrame * SPRITE_WIDTH, 0,
                 SPRITE_WIDTH, SPRITE_HEIGHT,
-                canvas.width / 2 - SPRITE_WIDTH, playerY - SPRITE_HEIGHT / 2,
+                playerX - SPRITE_WIDTH/2, playerY - SPRITE_HEIGHT/2,
                 SPRITE_WIDTH, SPRITE_HEIGHT
             );
             
@@ -323,6 +205,35 @@
             ctx.fillStyle = '#FFFFFF';
             for (let sneaker of sneakers) {
                 ctx.fillRect(sneaker.x, sneaker.y, 20, 10);
+            }
+        }
+        
+        function updateSneakers() {
+            // Create new sneaker
+            if (Math.random() < 0.02) {
+                sneakers.push({
+                    x: canvas.width,
+                    y: Math.random() * (groundY - 100)
+                });
+            }
+            
+            // Update sneaker positions
+            for (let i = sneakers.length - 1; i >= 0; i--) {
+                const sneaker = sneakers[i];
+                sneaker.x -= SNEAKER_SPEED;
+                
+                // Check collision with player
+                if (Math.abs(sneaker.x - playerX) < 20 && Math.abs(sneaker.y - playerY) < 20) {
+                    score += 10;
+                    document.getElementById('score').textContent = 'SCORE: ' + score;
+                    sneakers.splice(i, 1);
+                    continue;
+                }
+                
+                // Remove if off screen
+                if (sneaker.x < -20) {
+                    sneakers.splice(i, 1);
+                }
             }
         }
         
@@ -338,126 +249,38 @@
             jump();
         });
         
-        // Upgrade system
-        const upgradeCosts = {
-            jump: { level: 0, cost: 50, maxLevel: 5, multiplier: 1.5 },
-            magnet: { level: 0, cost: 75, maxLevel: 5, multiplier: 1.5 },
-            coin: { level: 0, cost: 100, maxLevel: 5, multiplier: 1.5 },
-            time: { level: 0, cost: 150, maxLevel: 5, multiplier: 1.5 }
-        };
-        
-        function updateShopUI() {
-            document.getElementById('coins').textContent = 'COINS: ' + coins;
-            
-            for (const [type, upgrade] of Object.entries(upgradeCosts)) {
-                const levelElem = document.getElementById(`${type}Level`);
-                const costElem = document.getElementById(`${type}Cost`);
-                if (levelElem) levelElem.textContent = upgrades[type];
-                if (costElem) {
-                    const cost = Math.floor(upgrade.cost * Math.pow(upgrade.multiplier, upgrades[type]));
-                    costElem.textContent = upgrades[type] >= upgrade.maxLevel ? 'MAX' : cost;
-                }
+        function jump() {
+            if (!isJumping && gameRunning) {
+                isJumping = true;
+                playerVelY = JUMP_FORCE;
             }
-        }
-        
-        function buyUpgrade(type) {
-            const upgrade = upgradeCosts[type];
-            if (upgrades[type] >= upgrade.maxLevel) return;
-            
-            const cost = Math.floor(upgrade.cost * Math.pow(upgrade.multiplier, upgrades[type]));
-            if (coins >= cost) {
-                coins -= cost;
-                upgrades[type]++;
-                localStorage.setItem(`${type}Level`, upgrades[type]);
-                updateShopUI();
-            }
-        }
-        
-        function showShop() {
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('shopScreen').style.display = 'flex';
-            updateShopUI();
-        }
-        
-        function hideShop() {
-            document.getElementById('shopScreen').style.display = 'none';
-            document.getElementById('startScreen').style.display = 'flex';
         }
         
         function startGame() {
             score = 0;
-            timeLeft = 30 + upgrades.time * 5;
+            timeLeft = 30;
+            playerX = 100;
             playerY = groundY;
             playerVelY = 0;
             isJumping = false;
             sneakers = [];
-            frameCount = 0;
             
             document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('score').textContent = 'SCORE: 0';
             gameRunning = true;
             lastTime = performance.now();
             requestAnimationFrame(update);
-            
-            // Update score display
-            document.getElementById('score').textContent = 'SCORE: ' + score;
         }
         
         function gameOver() {
             gameRunning = false;
-            
-            // Add bonus coins based on score and upgrades
-            const bonusCoins = Math.floor(score * (1 + upgrades.coin * 0.2));
-            coins += bonusCoins;
-            localStorage.setItem('coins', coins);
-            document.getElementById('coins').textContent = 'COINS: ' + coins;
-            
             document.getElementById('startScreen').style.display = 'flex';
-            updateShopUI();
-        }
-        
-        function jump() {
-            if (!isJumping && gameRunning) {
-                isJumping = true;
-                playerVelY = JUMP_FORCE * (1 - upgrades.jump * 0.1);
+            if (window.TelegramGameProxy) {
+                window.TelegramGameProxy.setScore(score);
             }
         }
         
-        function updateSneakers() {
-            frameCount++;
-            
-            // Create new sneaker
-            if (frameCount % 60 === 0) {
-                sneakers.push({
-                    x: Math.random() * (canvas.width - 20),
-                    y: -10
-                });
-            }
-            
-            // Update sneaker positions
-            for (let i = sneakers.length - 1; i >= 0; i--) {
-                const sneaker = sneakers[i];
-                sneaker.y += SNEAKER_SPEED;
-                
-                // Check collision with player
-                const dx = (canvas.width / 2) - (sneaker.x + 10);
-                const dy = playerY - (sneaker.y + 5);
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
-                if (distance < 30 + upgrades.magnet * 5) {
-                    score += 10;
-                    document.getElementById('score').textContent = 'SCORE: ' + score;
-                    sneakers.splice(i, 1);
-                    continue;
-                }
-                
-                // Remove if off screen
-                if (sneaker.y > canvas.height) {
-                    sneakers.splice(i, 1);
-                }
-            }
-        }
-        
-        // Initialize shop UI
+        // Initialize game
         updateShopUI();
     </script>
 </body>
