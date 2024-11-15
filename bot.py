@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 # Bot Configuration
 TOKEN = "7719239069:AAGfskyBni2VejQMAxv_nX0BKZIxrkpcjPc"
-WEBAPP_URL = "https://maximumkingz.github.io/SneakDog/"  # Updated URL to use correct path
+WEBAPP_URL = "https://maximumkingz.github.io/SneakDog/templates/game.html"  # Updated to correct GitHub Pages URL
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /start is issued."""
