@@ -6,40 +6,50 @@
     <title>SneakDog Game</title>
     <script src="https://telegram.org/js/games.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+        
         body {
             overflow: hidden;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            font-family: Arial, sans-serif;
+            background: #000;
+            font-family: 'Press Start 2P', cursive;
             touch-action: none;
             color: white;
+            image-rendering: pixelated;
         }
+        
         #gameCanvas {
             position: absolute;
             top: 0;
             left: 0;
+            image-rendering: pixelated;
         }
+        
         #score {
             position: fixed;
             top: 20px;
             left: 20px;
-            font-size: 24px;
-            background: rgba(0,0,0,0.5);
-            padding: 10px;
-            border-radius: 10px;
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border: 4px solid #fff;
+            border-radius: 4px;
             z-index: 100;
+            text-shadow: 2px 2px #000;
         }
+        
         #startScreen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -48,34 +58,48 @@
             text-align: center;
             padding: 20px;
         }
+        
         .button {
             padding: 15px 30px;
-            font-size: 20px;
-            background: #4CAF50;
+            font-size: 16px;
+            background: #4a4a4a;
             color: white;
-            border: none;
-            border-radius: 5px;
+            border: 4px solid #fff;
+            font-family: 'Press Start 2P', cursive;
             cursor: pointer;
             margin: 10px;
+            text-transform: uppercase;
+            transition: all 0.2s;
         }
+        
+        .button:hover {
+            background: #666;
+            transform: scale(1.05);
+        }
+        
         h1 {
-            font-size: 36px;
+            font-size: 32px;
             margin-bottom: 20px;
+            text-shadow: 4px 4px #000;
+            color: #fff;
         }
+        
         p {
-            font-size: 18px;
+            font-size: 14px;
             margin-bottom: 20px;
+            line-height: 1.5;
+            text-shadow: 2px 2px #000;
         }
     </style>
 </head>
 <body>
-    <div id="score">Score: 0 | Time: 30s</div>
+    <div id="score">SCORE: 0 TIME: 30s</div>
     <canvas id="gameCanvas"></canvas>
     
     <div id="startScreen">
-        <h1>🐕 SneakDog 🎮</h1>
-        <p>Catch the dog to earn points! You have 30 seconds!</p>
-        <button onclick="startGame()" class="button">Start Game</button>
+        <h1> SNEAKDOG </h1>
+        <p>CATCH THE DOG!<br>TIME: 30 SEC</p>
+        <button onclick="startGame()" class="button">START GAME</button>
     </div>
 
     <script>
@@ -96,65 +120,51 @@
         let targetY = 0;
         let timeLeft = 30;
         let difficulty = 1;
-        let dogSpeed = 0.03;  // Reduced base speed
-        let maxSpeed = 5;     // Maximum speed cap
+        let dogSpeed = 0.03;
+        let maxSpeed = 5;
         let lastUpdateTime = 0;
         let particles = [];
         let dogVelocityX = 0;
         let dogVelocityY = 0;
-        let friction = 0.98;  // Friction to smooth movement
+        let friction = 0.98;
+        let dogFrame = 0;
+        let frameCount = 0;
+        let grassTiles = [];
         
-        // Load dog image
+        // Load dog sprite
         const dogImage = new Image();
-        dogImage.src = 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/1f436.svg';
+        dogImage.src = 'https://raw.githubusercontent.com/MaximumKingz/SneakDog/main/sprites/dog_sprite.png';
+        
+        // Load grass tile
+        const grassImage = new Image();
+        grassImage.src = 'https://raw.githubusercontent.com/MaximumKingz/SneakDog/main/sprites/grass.png';
+        
+        function generateGrassTiles() {
+            const tileSize = 32;
+            for(let y = 0; y < canvas.height; y += tileSize) {
+                for(let x = 0; x < canvas.width; x += tileSize) {
+                    grassTiles.push({x, y});
+                }
+            }
+        }
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-        }
-
-        function newDogPosition() {
-            // Calculate new target position relative to current position
-            const maxDistance = 150 + (difficulty * 10); // Increase range with difficulty
-            const minDistance = 50;  // Minimum jump distance
-            
-            let angle = Math.random() * Math.PI * 2;
-            let distance = Math.random() * (maxDistance - minDistance) + minDistance;
-            
-            let newTargetX = dogX + Math.cos(angle) * distance;
-            let newTargetY = dogY + Math.sin(angle) * distance;
-            
-            // Keep dog within bounds with padding
-            const padding = 50;
-            newTargetX = Math.max(padding, Math.min(canvas.width - padding, newTargetX));
-            newTargetY = Math.max(padding, Math.min(canvas.height - padding, newTargetY));
-            
-            // Set new target
-            targetX = newTargetX;
-            targetY = newTargetY;
-            
-            // Add initial velocity in the direction of movement
-            const dx = targetX - dogX;
-            const dy = targetY - dogY;
-            const length = Math.sqrt(dx * dx + dy * dy);
-            
-            if (length > 0) {
-                dogVelocityX = (dx / length) * (3 + difficulty);
-                dogVelocityY = (dy / length) * (3 + difficulty);
-            }
-            
-            // Adjust speed based on difficulty
-            dogSpeed = Math.min(0.03 + (difficulty * 0.005), 0.06);
+            grassTiles = [];
+            generateGrassTiles();
         }
 
         function createParticles(x, y) {
             for (let i = 0; i < 10; i++) {
                 particles.push({
-                    x: x + 50,
-                    y: y + 50,
-                    vx: (Math.random() - 0.5) * 10,
-                    vy: (Math.random() - 0.5) * 10,
-                    life: 1
+                    x: x + 16,
+                    y: y + 16,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8,
+                    size: Math.random() * 4 + 2,
+                    life: 1,
+                    color: `hsl(${Math.random() * 60 + 30}, 100%, 50%)`
                 });
             }
         }
@@ -171,11 +181,38 @@
                     continue;
                 }
                 
-                ctx.fillStyle = `rgba(255, 215, 0, ${p.life})`;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 5 * p.life, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
             }
+        }
+
+        function newDogPosition() {
+            const maxDistance = 150 + (difficulty * 10);
+            const minDistance = 50;
+            
+            let angle = Math.random() * Math.PI * 2;
+            let distance = Math.random() * (maxDistance - minDistance) + minDistance;
+            
+            let newTargetX = dogX + Math.cos(angle) * distance;
+            let newTargetY = dogY + Math.sin(angle) * distance;
+            
+            const padding = 50;
+            newTargetX = Math.max(padding, Math.min(canvas.width - padding, newTargetX));
+            newTargetY = Math.max(padding, Math.min(canvas.height - padding, newTargetY));
+            
+            targetX = newTargetX;
+            targetY = newTargetY;
+            
+            const dx = targetX - dogX;
+            const dy = targetY - dogY;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            
+            if (length > 0) {
+                dogVelocityX = (dx / length) * (3 + difficulty);
+                dogVelocityY = (dy / length) * (3 + difficulty);
+            }
+            
+            dogSpeed = Math.min(0.03 + (difficulty * 0.005), 0.06);
         }
 
         function updateGame(timestamp) {
@@ -184,18 +221,17 @@
             const deltaTime = timestamp - lastUpdateTime;
             lastUpdateTime = timestamp;
 
-            // Update time
             if (deltaTime) {
                 timeLeft = Math.max(0, timeLeft - deltaTime / 1000);
-                scoreDisplay.textContent = `Score: ${score} | Time: ${Math.ceil(timeLeft)}s`;
+                scoreDisplay.textContent = `SCORE: ${score} TIME: ${Math.ceil(timeLeft)}s`;
                 
                 if (timeLeft <= 0) {
                     gameRunning = false;
                     startScreen.style.display = 'flex';
-                    startScreen.querySelector('h1').textContent = `Game Over! Score: ${score}`;
-                    startScreen.querySelector('button').textContent = 'Play Again';
+                    startScreen.querySelector('h1').textContent = `GAME OVER!`;
+                    startScreen.querySelector('p').textContent = `FINAL SCORE: ${score}`;
+                    startScreen.querySelector('button').textContent = 'PLAY AGAIN';
                     
-                    // Send final score to Telegram
                     if (TelegramGameProxy) {
                         TelegramGameProxy.setScore(score);
                     }
@@ -205,22 +241,22 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Calculate distance to target
+            // Draw grass background
+            grassTiles.forEach(tile => {
+                ctx.drawImage(grassImage, tile.x, tile.y, 32, 32);
+            });
+            
             const dx = targetX - dogX;
             const dy = targetY - dogY;
             const distanceToTarget = Math.sqrt(dx * dx + dy * dy);
             
-            // Move dog with physics
             if (distanceToTarget > 5) {
-                // Apply force towards target
                 dogVelocityX += dx * dogSpeed;
                 dogVelocityY += dy * dogSpeed;
                 
-                // Apply friction
                 dogVelocityX *= friction;
                 dogVelocityY *= friction;
                 
-                // Cap maximum speed
                 const currentSpeed = Math.sqrt(dogVelocityX * dogVelocityX + dogVelocityY * dogVelocityY);
                 if (currentSpeed > maxSpeed) {
                     const scale = maxSpeed / currentSpeed;
@@ -228,27 +264,32 @@
                     dogVelocityY *= scale;
                 }
                 
-                // Update position
                 dogX += dogVelocityX;
                 dogY += dogVelocityY;
             } else {
-                // If close to target, get new position
                 newDogPosition();
             }
             
-            // Keep dog within bounds
-            dogX = Math.max(0, Math.min(canvas.width - 100, dogX));
-            dogY = Math.max(0, Math.min(canvas.height - 100, dogY));
+            dogX = Math.max(0, Math.min(canvas.width - 32, dogX));
+            dogY = Math.max(0, Math.min(canvas.height - 32, dogY));
             
-            // Draw dog with slight tilt based on movement
+            // Animate dog sprite
+            frameCount++;
+            if (frameCount % 10 === 0) {
+                dogFrame = (dogFrame + 1) % 4;
+            }
+            
+            // Draw dog with direction
             ctx.save();
-            ctx.translate(dogX + 50, dogY + 50);
-            const tilt = Math.atan2(dogVelocityY, dogVelocityX) * 0.3;
-            ctx.rotate(tilt);
-            ctx.drawImage(dogImage, -50, -50, 100, 100);
+            ctx.translate(dogX + 16, dogY + 16);
+            if (dogVelocityX < 0) ctx.scale(-1, 1);
+            ctx.drawImage(
+                dogImage,
+                dogFrame * 32, 0, 32, 32,
+                -16, -16, 32, 32
+            );
             ctx.restore();
             
-            // Update particles
             updateParticles();
             
             requestAnimationFrame(updateGame);
@@ -261,23 +302,17 @@
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
 
-            if (x >= dogX && x <= dogX + 100 && y >= dogY && y <= dogY + 100) {
-                // Create particles on successful catch
+            if (x >= dogX && x <= dogX + 32 && y >= dogY && y <= dogY + 32) {
                 createParticles(dogX, dogY);
                 
-                // Increase score based on difficulty
                 score += Math.ceil(difficulty);
-                scoreDisplay.textContent = `Score: ${score} | Time: ${Math.ceil(timeLeft)}s`;
+                scoreDisplay.textContent = `SCORE: ${score} TIME: ${Math.ceil(timeLeft)}s`;
                 
-                // Increase difficulty
                 difficulty += 0.2;
-                
-                // Add time bonus
                 timeLeft = Math.min(30, timeLeft + 2);
                 
                 newDogPosition();
                 
-                // Send score to Telegram
                 if (TelegramGameProxy) {
                     TelegramGameProxy.setScore(score);
                 }
@@ -294,9 +329,11 @@
             dogVelocityX = 0;
             dogVelocityY = 0;
             particles = [];
-            scoreDisplay.textContent = 'Score: 0 | Time: 30s';
-            dogX = canvas.width/2 - 50;
-            dogY = canvas.height/2 - 50;
+            dogFrame = 0;
+            frameCount = 0;
+            scoreDisplay.textContent = 'SCORE: 0 TIME: 30s';
+            dogX = canvas.width/2 - 16;
+            dogY = canvas.height/2 - 16;
             lastUpdateTime = performance.now();
             newDogPosition();
             updateGame(performance.now());
@@ -313,7 +350,11 @@
         // Initialize
         resizeCanvas();
         dogImage.onload = () => {
-            ctx.drawImage(dogImage, canvas.width/2 - 50, canvas.height/2 - 50, 100, 100);
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(dogImage, canvas.width/2 - 16, canvas.height/2 - 16, 32, 32);
+        };
+        grassImage.onload = () => {
+            generateGrassTiles();
         };
     </script>
 </body>
