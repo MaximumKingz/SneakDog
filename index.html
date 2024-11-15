@@ -28,17 +28,30 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: #4a752c;
+            border: 4px solid #4CAF50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+        
+        .hud-item {
+            position: fixed;
+            color: white;
+            font-size: 14px;
+            text-shadow: 2px 2px #000;
+            z-index: 100;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #4CAF50;
+            border-radius: 4px;
         }
         
         #score {
-            position: fixed;
             top: 20px;
             left: 20px;
-            color: white;
-            font-size: 16px;
-            z-index: 100;
-            text-shadow: 2px 2px #000;
+        }
+        
+        #time {
+            top: 20px;
+            right: 20px;
         }
         
         #startScreen {
@@ -47,13 +60,29 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             color: white;
             z-index: 1000;
+        }
+        
+        .title {
+            font-size: 32px;
+            color: #4CAF50;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #fff;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.5;
         }
         
         .button {
@@ -65,15 +94,30 @@
             font-family: 'Press Start 2P', cursive;
             cursor: pointer;
             margin-top: 20px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            border-radius: 4px;
+            box-shadow: 0 4px #388E3C;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px #388E3C;
+        }
+        
+        .button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px #388E3C;
         }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
-    <div id="score">SCORE: 0 TIME: 30s</div>
+    <div id="score" class="hud-item">SCORE: 0</div>
+    <div id="time" class="hud-item">TIME: 30s</div>
     <div id="startScreen">
-        <h1>SNEAKDOG</h1>
-        <p>CATCH THE SNEAKERS!</p>
+        <h1 class="title">SneakDog</h1>
+        <p class="subtitle">CATCH THE SNEAKERS!<br>PRESS SPACE OR TAP TO JUMP</p>
         <button onclick="startGame()" class="button">START GAME</button>
     </div>
 
@@ -81,6 +125,7 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const scoreDisplay = document.getElementById('score');
+        const timeDisplay = document.getElementById('time');
         const startScreen = document.getElementById('startScreen');
 
         // Game variables
@@ -105,49 +150,121 @@
         // Animation frame counter
         let frameCount = 0;
 
+        // Create pixel art dog sprite
+        function createDogSprite() {
+            const sprite = document.createElement('canvas');
+            sprite.width = 32;
+            sprite.height = 32;
+            const spriteCtx = sprite.getContext('2d');
+            
+            // Body (brown)
+            spriteCtx.fillStyle = '#8B4513';
+            spriteCtx.fillRect(8, 8, 20, 16);
+            
+            // Head details
+            spriteCtx.fillStyle = '#000';
+            spriteCtx.fillRect(22, 10, 4, 4); // Eye
+            spriteCtx.fillRect(24, 16, 6, 3); // Snout
+            
+            // Ear
+            spriteCtx.fillStyle = '#8B4513';
+            spriteCtx.fillRect(20, 4, 6, 6);
+            
+            return sprite;
+        }
+        
+        // Create pixel art sneaker sprite
+        function createSneakerSprite() {
+            const sprite = document.createElement('canvas');
+            sprite.width = 24;
+            sprite.height = 16;
+            const spriteCtx = sprite.getContext('2d');
+            
+            // Sole
+            spriteCtx.fillStyle = '#fff';
+            spriteCtx.fillRect(2, 10, 20, 4);
+            
+            // Upper
+            spriteCtx.fillStyle = '#eee';
+            spriteCtx.fillRect(4, 6, 16, 4);
+            
+            // Laces
+            spriteCtx.fillStyle = '#ddd';
+            spriteCtx.fillRect(8, 4, 8, 2);
+            
+            // Details
+            spriteCtx.fillStyle = '#4CAF50';
+            spriteCtx.fillRect(18, 7, 4, 2);
+            
+            return sprite;
+        }
+
+        const dogSprite = createDogSprite();
+        const sneakerSprite = createSneakerSprite();
+
         function resizeCanvas() {
             canvas.width = window.innerWidth - 40;
             canvas.height = window.innerHeight - 40;
             groundY = canvas.height - 50;
-            playerY = groundY;  // Reset player position when resizing
+            playerY = groundY;
         }
 
         function spawnSneaker() {
             sneakers.push({
                 x: canvas.width,
-                y: Math.random() * (groundY - 100),
-                collected: false
+                y: Math.random() * (groundY - 150) + 50,
+                collected: false,
+                rotation: Math.random() * Math.PI * 2
             });
         }
 
         function drawPlayer() {
-            // Body
+            ctx.save();
+            ctx.translate(playerX, playerY - 32);
+            
+            // Draw running legs
             ctx.fillStyle = '#8B4513';
-            ctx.fillRect(playerX, playerY - 30, 30, 30);
-            
-            // Eyes
-            ctx.fillStyle = 'white';
-            ctx.fillRect(playerX + 20, playerY - 25, 5, 5);
-            
-            // Legs animation
             const legOffset = Math.sin(frameCount * 0.2) * 5;
-            ctx.fillRect(playerX + 5, playerY, 5, 10 + legOffset);
-            ctx.fillRect(playerX + 20, playerY, 5, 10 - legOffset);
+            ctx.fillRect(10, 32, 4, 8 + legOffset);
+            ctx.fillRect(18, 32, 4, 8 - legOffset);
+            
+            // Draw dog sprite
+            ctx.drawImage(dogSprite, 0, 0);
+            
+            ctx.restore();
         }
 
-        function drawSneaker(x, y) {
-            ctx.fillStyle = 'white';
-            ctx.fillRect(x, y, 20, 10);
-            ctx.fillStyle = '#ddd';
-            ctx.fillRect(x + 15, y - 5, 5, 5);
+        function drawSneaker(x, y, rotation) {
+            ctx.save();
+            ctx.translate(x + 12, y + 8);
+            ctx.rotate(rotation);
+            ctx.drawImage(sneakerSprite, -12, -8);
+            ctx.restore();
+        }
+
+        function drawBackground() {
+            // Sky gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, groundY);
+            gradient.addColorStop(0, '#1a237e');
+            gradient.addColorStop(1, '#3949ab');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, groundY);
+            
+            // Ground
+            ctx.fillStyle = '#2d4619';
+            ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
+            
+            // Ground pattern
+            ctx.fillStyle = '#1a2f0d';
+            for(let x = 0; x < canvas.width; x += 20) {
+                ctx.fillRect(x, groundY, 2, canvas.height - groundY);
+            }
         }
 
         function updatePlayer() {
-            // Apply gravity
             playerVelY += gravity;
             playerY += playerVelY;
 
-            // Ground collision
             if (playerY > groundY) {
                 playerY = groundY;
                 playerVelY = 0;
@@ -159,44 +276,46 @@
             for (let i = sneakers.length - 1; i >= 0; i--) {
                 const sneaker = sneakers[i];
                 sneaker.x -= sneakerSpeed;
+                sneaker.rotation += 0.05;
 
-                // Check collision
                 if (!sneaker.collected &&
-                    playerX < sneaker.x + 20 &&
-                    playerX + 30 > sneaker.x &&
-                    playerY - 30 < sneaker.y + 10 &&
+                    playerX < sneaker.x + 24 &&
+                    playerX + 32 > sneaker.x &&
+                    playerY - 32 < sneaker.y + 16 &&
                     playerY > sneaker.y) {
                     sneaker.collected = true;
                     score += 10;
                     timeLeft = Math.min(30, timeLeft + 1);
+                    
+                    // Create collection effect
+                    createCollectionEffect(sneaker.x, sneaker.y);
                 }
 
-                // Remove if off screen or collected
-                if (sneaker.x < -20 || sneaker.collected) {
+                if (sneaker.x < -24 || sneaker.collected) {
                     sneakers.splice(i, 1);
                 }
             }
 
-            // Spawn new sneakers
             if (Math.random() < 0.02) {
                 spawnSneaker();
             }
         }
 
+        function createCollectionEffect(x, y) {
+            ctx.fillStyle = '#4CAF50';
+            ctx.font = '16px "Press Start 2P"';
+            ctx.fillText('+10', x, y - 20);
+        }
+
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw ground
-            ctx.fillStyle = '#2d4619';
-            ctx.fillRect(0, groundY + 10, canvas.width, canvas.height - groundY);
-
-            // Draw player
+            drawBackground();
             drawPlayer();
 
-            // Draw sneakers
             sneakers.forEach(sneaker => {
                 if (!sneaker.collected) {
-                    drawSneaker(sneaker.x, sneaker.y);
+                    drawSneaker(sneaker.x, sneaker.y, sneaker.rotation);
                 }
             });
         }
@@ -218,7 +337,8 @@
             updateSneakers();
             draw();
 
-            scoreDisplay.textContent = `SCORE: ${score} TIME: ${Math.ceil(timeLeft)}s`;
+            scoreDisplay.textContent = `SCORE: ${score}`;
+            timeDisplay.textContent = `TIME: ${Math.ceil(timeLeft)}s`;
 
             requestAnimationFrame(update);
         }
@@ -243,8 +363,8 @@
         function gameOver() {
             gameRunning = false;
             startScreen.style.display = 'flex';
-            startScreen.querySelector('h1').textContent = 'GAME OVER!';
-            startScreen.querySelector('p').textContent = `FINAL SCORE: ${score}`;
+            startScreen.querySelector('.title').textContent = 'GAME OVER!';
+            startScreen.querySelector('.subtitle').textContent = `FINAL SCORE: ${score}`;
             if (window.TelegramGameProxy) {
                 window.TelegramGameProxy.setScore(score);
             }
@@ -265,7 +385,6 @@
             requestAnimationFrame(update);
         }
 
-        // Event listeners
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('keydown', handleInput);
         canvas.addEventListener('click', handleInput);
@@ -274,7 +393,6 @@
             handleInput(e);
         });
 
-        // Initial setup
         resizeCanvas();
     </script>
 </body>
