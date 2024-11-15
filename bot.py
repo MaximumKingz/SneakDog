@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Bot Configuration
 TOKEN = "7719239069:AAGfskyBni2VejQMAxv_nX0BKZIxrkpcjPc"
-WEBAPP_URL = "https://maximumkingz.github.io/SneakDog/index.html"  # Point directly to index.html
+WEBAPP_URL = "https://raw.githubusercontent.com/MaximumKingz/SneakDog/main/index.html"  # Use raw GitHub content for now
 
 def signal_handler(signum, frame):
     """Handle shutdown signals gracefully"""
